@@ -62,7 +62,7 @@ class CommissionsControllers extends Controller {
         $validate = $this->validateInputs();
         if($validate->fails()){
             \Session::flash('error', $validate->messages()->first());
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         $input = \Input::all();
@@ -70,6 +70,12 @@ class CommissionsControllers extends Controller {
         $delegateObj = Delegate::getOne($input['delegate_id']);
         if($delegateObj == null){
             \Session::flash('error', 'هذا المندوب غير موجود');
+            return redirect()->back()->withInput();
+        }
+
+        $commissionObj = Commission::checkDelegate($input['delegate_id'],$input['valid_until'],$userObj->id);
+        if($commissionObj != null){
+            \Session::flash('error', 'هذا المندوب لديه عمولة متاحة بعد التاريخ المدخل');
             return redirect()->back();
         }
 
@@ -103,7 +109,13 @@ class CommissionsControllers extends Controller {
         $delegateObj = Delegate::getOne($input['delegate_id']);
         if($delegateObj == null){
             \Session::flash('error', 'هذا المندوب غير موجود');
-            return redirect()->back();
+            return redirect()->back()->withInput();
+        }
+
+        $commissionObj = Commission::checkDelegate($input['delegate_id'],$input['valid_until']);
+        if($commissionObj != null){
+            \Session::flash('error', 'هذا المندوب لديه عمولة متاحة بعد التاريخ المدخل');
+            return redirect()->back()->withInput();
         }
 
         $userObj = new Commission;

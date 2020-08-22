@@ -47,6 +47,16 @@ class Commission extends Model{
         return $data;
     }
 
+    static function checkDelegate($delegate_id,$valid_until, $notId = false){
+        $dataObj = self::NotDeleted()->where('delegate_id',$delegate_id)->where('valid_until','>',$valid_until)->where('is_active',1);
+            
+        if ($notId != false) {
+            $notId = (array) $notId;
+            $dataObj->whereNotIn('id', $notId);
+        }
+
+        return $dataObj->first();
+    }
 
     static function getData($source) {
         $data = new  \stdClass();
