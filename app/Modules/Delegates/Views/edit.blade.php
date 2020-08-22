@@ -39,10 +39,10 @@
                                     <div class="col-xs-12 col-sm-6 col-md-12">
                                         <div class="form-group">
                                             <label>الفرع</label>
-                                            <select name="shop_id" class="form-control" required>
+                                            <select name="shop_id[]" class="form-control" required multiple>
                                                 <option value="">اختر..</option>
                                                 @foreach($data->shops as $shopKey => $shopValue)
-                                                    <option value="{{ $shopValue->id }}" {{ $shopValue->id == $data->data->shop_id ? "selected=selected" : ''  }}>{{ $shopValue->title }}</option>
+                                                    <option value="{{ $shopValue->id }}" {{ in_array($shopValue->id,$data->data->shops_id) ? "selected=selected" : ''  }}>{{ $shopValue->title }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -58,12 +58,6 @@
                                         </div>
                                     </div>
                                     <div class="col-xs-12 col-sm-6 col-md-6">
-                                        <div class="form-group">
-                                            <label>العمولة (%)</label>
-                                            <input type="number" min="0" class="form-control" placeholder="العمولة (%)" name="commission" value="{{ $data->data->commission }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-6 col-md-12">
                                         <div class="form-group">
                                             <label>العنوان</label>
                                             <input type="text" class="form-control" placeholder="العنوان" name="address" value="{{ $data->data->address }}">

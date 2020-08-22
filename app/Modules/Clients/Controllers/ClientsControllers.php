@@ -14,13 +14,13 @@ class ClientsControllers extends Controller {
 
         $rules = [
             'name' => 'required',
-            'identity' => 'required',
+            // 'identity' => 'required',
             'phone' => 'required',
         ];
 
         $message = [
             'name.required' => "يرجي ادخال اسم العميل",
-            'identity.required' => "يرجي ادخال رقم الهوية",
+            // 'identity.required' => "يرجي ادخال رقم الهوية",
             'phone.required' => 'يرجي ادخال رقم التليفون',
         ];
 

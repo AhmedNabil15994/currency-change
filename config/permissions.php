@@ -46,6 +46,13 @@ return [
     'DelegatesControllers@create' => 'add-delegate',
     'DelegatesControllers@delete' => 'delete-delegate',
 
+    'CommissionsControllers@index' => 'list-commissions',
+    'CommissionsControllers@edit' => 'edit-commission',
+    'CommissionsControllers@update' => 'edit-commission',
+    'CommissionsControllers@add' => 'add-commission',
+    'CommissionsControllers@create' => 'add-commission',
+    'CommissionsControllers@delete' => 'delete-commission',
+
     'ClientsControllers@index' => 'list-clients',
     'ClientsControllers@edit' => 'edit-client',
     'ClientsControllers@update' => 'edit-client',

@@ -49,6 +49,9 @@
                             @if(\Helper::checkRules('list-delegates'))
                                 <li class="{{ Active(URL::to('/delegates*')) }}"><a href="{{ URL::to('/delegates') }}">المندوبين</a></li>
                             @endif
+                            @if(\Helper::checkRules('list-delegates,list-commissions'))
+                                <li class="{{ Active(URL::to('/commissions*')) }}"><a href="{{ URL::to('/commissions') }}">عمولات المندوبين</a></li>
+                            @endif
                             @if(\Helper::checkRules('list-clients'))
                                 <li class="{{ Active(URL::to('/clients*')) }}"><a href="{{ URL::to('/clients') }}">العملاء</a></li>
                             @endif

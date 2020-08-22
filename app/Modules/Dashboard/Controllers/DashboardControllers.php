@@ -150,7 +150,9 @@ class DashboardControllers extends Controller {
     }
 
     public function index(){
+        return view('Dashboard.Views.test');
         dd('dashboard');
+
     	$input = \Input::all();
     	$now = date('Y-m-d');
     	if(Session::get('group_id') == 1 && IS_ADMIN){   // IS_ADMIN

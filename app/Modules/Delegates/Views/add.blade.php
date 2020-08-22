@@ -25,7 +25,7 @@
                                         <div class="col-xs-10 col-sm-5 col-md-10">
                                             <div class="form-group">
                                                 <label>اسم المندوب</label>
-                                                <input type="text" class="form-control" placeholder="اسم المندوب" name="name" value="{{ old('name') }}" required>
+                                                <input type="text" class="form-control" placeholder="اسم المندوب" name="name" value="{{ old('name') }}">
                                             </div>
                                         </div>
                                         <div class="col-xs-2 col-sm-1 col-md-2">
@@ -39,7 +39,7 @@
                                         <div class="col-xs-12 col-sm-6 col-md-12">
                                             <div class="form-group">
                                                 <label>الفرع</label>
-                                                <select name="shop_id" class="form-control" required>
+                                                <select name="shop_id[]" class="form-control" required multiple>
                                                     <option value="">اختر..</option>
                                                     @foreach($data->shops as $shopKey => $shopValue)
                                                         <option value="{{ $shopValue->id }}" {{ $shopValue->id == old('shop_id') ? "selected=selected" : ''  }}>{{ $shopValue->title }}</option>
@@ -58,12 +58,6 @@
                                             </div>
                                         </div>
                                         <div class="col-xs-12 col-sm-6 col-md-6">
-                                            <div class="form-group">
-                                                <label>العمولة (%)</label>
-                                                <input type="number" min="0" class="form-control" placeholder="العمولة (%)" name="commission" value="{{ old('commission') }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 col-sm-6 col-md-12">
                                             <div class="form-group">
                                                 <label>العنوان</label>
                                                 <input type="text" class="form-control" placeholder="العنوان" name="address" value="{{ old('address') }}">

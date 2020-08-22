@@ -55,6 +55,7 @@ class RouteServiceProvider extends ServiceProvider
         Route::middleware(['backend'])->namespace($this->namespace)
             ->group(function () {
             require app_path('Modules/Users/routes.php');
+            require app_path('Modules/DelegateCommission/routes.php');
             require app_path('Modules/Delegates/routes.php');
             require app_path('Modules/BankAccounts/routes.php');
             require app_path('Modules/Storages/routes.php');

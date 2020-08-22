@@ -17,14 +17,12 @@ class DelegatesControllers extends Controller {
             'name' => 'required',
             'shop_id' => 'required',
             'phone' => 'required',
-            'commission' => 'required',
         ];
 
         $message = [
             'name.required' => "يرجي ادخال اسم المندوب",
             'shop_id.required' => "يرجي اختيار الفرع",
             'phone.required' => 'يرجي ادخال رقم التليفون',
-            'commission.required' => 'يرجي ادخال العمولة',
         ];
 
         $validate = \Validator::make($input, $rules, $message);
@@ -77,8 +75,7 @@ class DelegatesControllers extends Controller {
         $userObj->name = $input['name'];
         $userObj->phone = $input['phone'];
         $userObj->address = $input['address'];
-        $userObj->commission = $input['commission'];
-        $userObj->shop_id = $input['shop_id'];
+        $userObj->shop_id = implode(',', $input['shop_id']);
         $userObj->is_active = isset($input['active']) ? 1 : 0;
         $userObj->updated_at = DATE_TIME;
         $userObj->updated_by = USER_ID;

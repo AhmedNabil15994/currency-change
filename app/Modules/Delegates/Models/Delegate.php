@@ -10,12 +10,8 @@ class Delegate extends Model{
     protected $table = 'delegates';
     protected $primaryKey = 'id';
     public $timestamps = false;
-
-    function Shop(){
-        return $this->belongsTo('App\Models\Shop','shop_id');
-    }
-
-    static function dataList() {
+    
+    static function dataList($withPaginate=null) {
         $input = \Input::all();
 
         $source = self::NotDeleted();
@@ -25,26 +21,30 @@ class Delegate extends Model{
         if (isset($input['phone']) && $input['phone'] != 0) {
             $source->where('phone', $input['phone']);
         }
-        if (isset($input['commission']) && $input['commission'] != 0) {
-            $source->where('commission', $input['commission']);
-        }
         if (isset($input['shop_id']) && !empty($input['shop_id'])) {
-            $source->where('shop_id', $input['shop_id']);
+            $source->where('shop_id', 'LIKE', '%' .','.$input['shop_id'] . '%')
+                   ->orWhere('shop_id', 'LIKE', '%' .$input['shop_id'].',' . '%')
+                   ->orWhere('shop_id', $input['shop_id']);
         }
 
         $source->orderBy('id','DESC');
-        return self::generateObj($source);
+        return self::generateObj($source,$withPaginate);
     }
 
-    static function generateObj($source){
-        $sourceArr = $source->paginate(PAGINATION);
-
+    static function generateObj($source,$withPaginate=null){
+        if($withPaginate != null){
+            $sourceArr = $source->get();
+        }else{
+            $sourceArr = $source->paginate(PAGINATION);
+        }
         $list = [];
         foreach($sourceArr as $key => $value) {
             $list[$key] = new \stdClass();
             $list[$key] = self::getData($value);
         }
-        $data['pagination'] = \Helper::GeneratePagination($sourceArr);
+        if($withPaginate == null){
+            $data['pagination'] = \Helper::GeneratePagination($sourceArr);
+        }
         $data['data'] = $list;
 
         return $data;
@@ -57,9 +57,8 @@ class Delegate extends Model{
         $data->name = ucwords($source->name);
         $data->phone = $source->phone;
         $data->address = $source->address;
-        $data->commission = $source->commission;
-        $data->shop_id = $source->shop_id;
-        $data->shop_name = $source->Shop->title;
+        $data->shops_id = explode(',', $source->shop_id);
+        $data->shops = Shop::whereIn('id',explode(',', $source->shop_id))->get();
         $data->active = $source->is_active == 1 ? "مفعل" : "غير مفعل";
         $data->is_active = $source->is_active;
         return $data;
@@ -89,9 +88,8 @@ class Delegate extends Model{
         $userObj->phone = $input['phone'];
         $userObj->address = $input['address'];
         $userObj->name = $input['name'];
-        $userObj->commission = $input['commission'];
         $userObj->is_active = isset($input['active']) ? 1 : 0;
-        $userObj->shop_id = $input['shop_id'];
+        $userObj->shop_id = implode(',', $input['shop_id']);
         $userObj->created_at = DATE_TIME;
         $userObj->created_by = USER_ID;
         $userObj->save();
