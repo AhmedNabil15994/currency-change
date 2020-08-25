@@ -13,7 +13,7 @@ function deleteExchange($id) {
         closeOnConfirm: false
     }, function () {
         swal("تم الحذف!", "تم حذف عملية الاستبدال.", "success");
-        $.get('/exhanges/delete/' + $id,function(data) {
+        $.get('/exchanges/delete/' + $id,function(data) {
             if (data.status.status == 1) {
                 $('#tableRaw' + $id).remove();
                 successNotification(data.status.message);
