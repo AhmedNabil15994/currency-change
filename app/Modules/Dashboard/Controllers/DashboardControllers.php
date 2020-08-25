@@ -150,7 +150,6 @@ class DashboardControllers extends Controller {
     }
 
     public function index(){
-        return view('Dashboard.Views.test');
         dd('dashboard');
 
     	$input = \Input::all();

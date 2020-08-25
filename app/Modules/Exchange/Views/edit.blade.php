@@ -43,6 +43,17 @@
                             <div class="col-xs-12">
                                 <div class="col-xs-12 col-sm-6 col-md-3">
                                     <div class="form-group">
+                                        <label>الفرع</label>
+                                        <select class="form-control" name="shop_id"> 
+                                            <option value="">اختر الفرع</option>
+                                            @foreach($data->shops as $shop)
+                                            <option value="{{ $shop->id }}" {{ $data->data->shop_id == $shop->id ? 'selected' : '' }}>{{ $shop->title }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-3">
+                                    <div class="form-group">
                                         <label>نوع العميل</label>
                                         <select class="form-control" name="type"> 
                                             <option value="1" {{ $data->data->type == 1 ? 'selected' : '' }}>عميل</option>
@@ -78,6 +89,7 @@
                                         <input type="text" class="form-control" name="client_name" placeholder="اسم العميل" value="{{ old('client_name') }}">
                                     </div>
                                 </div>
+                                <div class="clearfix"></div>
                                 <div class="col-xs-12 col-sm-6 col-md-3 client-data">
                                     <div class="form-group">
                                         <label>رقم التليفون</label>

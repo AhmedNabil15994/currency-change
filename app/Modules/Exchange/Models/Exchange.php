@@ -11,6 +11,10 @@ class Exchange extends Model{
     protected $primaryKey = 'id';
     public $timestamps = false;
 
+    public function Shop(){
+        return $this->belongsTo('\App\Models\Shop','shop_id');
+    }
+
     public function FromCurrency(){
         return $this->belongsTo('\App\Models\Currency','from_id');
     }
@@ -25,6 +29,9 @@ class Exchange extends Model{
         $source = self::NotDeleted();
         if (isset($input['from_id']) && !empty($input['from_id'])) {
             $source->where('from_id', $input['from_id']);
+        }
+        if (isset($input['shop_id']) && !empty($input['shop_id'])) {
+            $source->where('shop_id', $input['shop_id']);
         }
         if (isset($input['to_id']) && !empty($input['to_id'])) {
             $source->where('to_id', $input['to_id']);
@@ -80,6 +87,8 @@ class Exchange extends Model{
         $data->type_text = $myType;
         $data->user_name = $user_name;
         $data->user_id = $source->user_id;
+        $data->shop_id = $source->shop_id;
+        $data->shop_name = $source->Shop->title;
         $data->from_id = $source->from_id;
         $data->from = $source->FromCurrency;
         $data->details_id = $source->details_id;

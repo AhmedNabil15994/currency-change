@@ -4,6 +4,7 @@ use App\Models\Exchange;
 use App\Models\Currency;
 use App\Models\Delegate;
 use App\Models\Client;
+use App\Models\Shop;
 use App\Models\Details;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
@@ -18,12 +19,14 @@ class ExchangeControllers extends Controller {
 
         $rules = [
             'type' => 'required',
+            'shop_id' => 'required',
             'amount' => 'required',
             'details_id' => 'required',
         ];
 
         $message = [
             'type.required' => "يرجي اختيار نوع العمولة",
+            'shop_id.required' => "يرجي اختيار الفرع",
             'amount.required' => "يرجي ادخال الكمية المراد تحويلها",
             'details_id.required' => "يرجي اختيار نوع التحويل",
         ];
@@ -35,7 +38,7 @@ class ExchangeControllers extends Controller {
 
     public function index() {
         $usersList = Exchange::dataList();
-        // dd($usersList['data']);
+        $usersList['shops'] = Shop::dataList('no_paginate')['data'];
         $usersList['currencies'] = Currency::dataList('no_paginate')['data'];
         $usersList['delegates'] = Delegate::dataList('no_paginate')['data'];
         $usersList['clients'] = Client::dataList('no_paginate')['data'];
@@ -52,6 +55,7 @@ class ExchangeControllers extends Controller {
         }
 
         $data['data'] = Exchange::getData($userObj);
+        $data['shops'] = Shop::dataList('no_paginate')['data'];
         $data['currencies'] = Details::dataList('no_paginate')['data'];
         $data['delegates'] = Delegate::dataList('no_paginate')['data'];
         $data['clients'] = Client::dataList('no_paginate')['data'];
@@ -81,6 +85,12 @@ class ExchangeControllers extends Controller {
             return redirect()->back()->withInput();
         }
 
+        $shopObj = Shop::getOne($input['shop_id']);
+        if($shopObj == null ) {
+            \Session::flash('error', "هذا الفرع غير موجود");
+            return redirect()->back()->withInput();
+        }
+
         $user_id = 0 ;
         if($input['type'] == 1){
             if($input['client_id'] == 0){
@@ -104,7 +114,6 @@ class ExchangeControllers extends Controller {
                     $clientObj->created_by = USER_ID;
                     $clientObj->save();
                 }
-                $user_id = $clientObj->id;
             }else{
                 $clientObj = Client::getOne($input['client_id']);
                 if($clientObj == null ) {
@@ -112,6 +121,7 @@ class ExchangeControllers extends Controller {
                     return redirect()->back()->withInput();
                 }
             }
+            $user_id = $clientObj->id;
         }elseif($input['type'] == 2){
             $delegateObj = Delegate::getOne($input['delegate_id']);
             if($delegateObj == null ) {
@@ -130,6 +140,7 @@ class ExchangeControllers extends Controller {
         $detailsObj = Details::getData($detailsObj);
         
         $exchangeObj->type = $input['type'];
+        $exchangeObj->shop_id = $input['shop_id'];
         $exchangeObj->details_id = $input['details_id'];
         $exchangeObj->user_id = $user_id;
         $exchangeObj->from_id = $detailsObj->from_id;
@@ -148,6 +159,7 @@ class ExchangeControllers extends Controller {
     public function add() {
         $data['currencies'] = Details::dataList('no_paginate')['data'];
         $data['delegates'] = Delegate::dataList('no_paginate')['data'];
+        $data['shops'] = Shop::dataList('no_paginate')['data'];
         $data['clients'] = Client::dataList('no_paginate')['data'];
         return view('Exchange.Views.add')->with('data',(object) $data);
     }
@@ -163,6 +175,12 @@ class ExchangeControllers extends Controller {
 
         if($input['amount'] == 0 ) {
             \Session::flash('error', "يرجي ادخال كمية صحيحة");
+            return redirect()->back()->withInput();
+        }
+
+        $shopObj = Shop::getOne($input['shop_id']);
+        if($shopObj == null ) {
+            \Session::flash('error', "هذا الفرع غير موجود");
             return redirect()->back()->withInput();
         }
 
@@ -189,7 +207,6 @@ class ExchangeControllers extends Controller {
                     $clientObj->created_by = USER_ID;
                     $clientObj->save();
                 }
-                $user_id = $clientObj->id;
             }else{
                 $clientObj = Client::getOne($input['client_id']);
                 if($clientObj == null ) {
@@ -197,6 +214,7 @@ class ExchangeControllers extends Controller {
                     return redirect()->back()->withInput();
                 }
             }
+            $user_id = $clientObj->id;
         }elseif($input['type'] == 2){
             $delegateObj = Delegate::getOne($input['delegate_id']);
             if($delegateObj == null ) {
@@ -216,6 +234,7 @@ class ExchangeControllers extends Controller {
         
         $exchangeObj = new Exchange;
         $exchangeObj->type = $input['type'];
+        $exchangeObj->shop_id = $input['shop_id'];
         $exchangeObj->details_id = $input['details_id'];
         $exchangeObj->user_id = $user_id;
         $exchangeObj->from_id = $detailsObj->from_id;
@@ -227,7 +246,7 @@ class ExchangeControllers extends Controller {
         $exchangeObj->created_by = USER_ID;
         $exchangeObj->save();
         \Session::flash('success', "تبيه! تم اضافة بيانات عملية الاستبدال");
-        return redirect()->to('exchanges/edit/' . $detailsObj->id);
+        return redirect()->to('exchanges/edit/' . $exchangeObj->id);
     }
 
     public function delete($id) {

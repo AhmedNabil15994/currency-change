@@ -12,7 +12,7 @@
                         <ul class="nav navbar-right panel_toolbox">
                             <div align="right">
                                 <button type="submit" class="btn btn-primary" style="width:110px;"><i class="fa fa-search"></i> بحث ..</button>
-                                @if(Input::has('from_id') || Input::has('to_id') || Input::has('type') || Input::has('client_id') || Input::has('delegate_id'))
+                                @if(Input::has('from_id') || Input::has('to_id') || Input::has('type') || Input::has('client_id') || Input::has('delegate_id') || Input::has('shop_id'))
                                     <a href="{{ URL::to('/exchanges') }}" type="submit" class="btn btn-danger" style="color: black;"><i class="fa fa-redo"></i></a>
                                 @endif
                                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
@@ -22,6 +22,17 @@
                     </div>
                     <div class="x_content search">
                         <div class="row">
+                            <div class="col-xs-6 col-md-4">
+                                <div class="form-group">
+                                    <label>الفرع</label>
+                                    <select class="form-control" name="shop_id"> 
+                                        <option>اختر الفرع ...</option>
+                                        @foreach($data->shops as $shop)
+                                        <option value="{{ $shop->id }}" {{ Input::has('shop_id') == $shop->id ? 'selected' : '' }}>{{ $shop->title }}</option>
+                                        @endforeach 
+                                    </select>
+                                </div>
+                            </div>
                             <div class="col-xs-6 col-md-4">
                                 <div class="form-group">
                                     <div class="form-group">
@@ -109,6 +120,7 @@
                         <thead>
                         <tr>
                             <th>ID</th>
+                            <th class="text-right">الفرع</th>
                             <th class="text-right">نوع العميل</th>
                             <th class="text-right">العميل</th>
                             <th class="text-right">العملة (من)</th>
@@ -123,6 +135,7 @@
                         @foreach($data->data as $value)
                             <tr id="tableRaw{{ $value->id }}">
                                 <td width="3%">{{ $value->id }}</td>
+                                <td>{{ $value->shop_name }}</td>
                                 <td>{{ $value->type_text }}</td>
                                 <td>{{ $value->user_name }}</td>
                                 <td>{{ $value->from->name }}</td>
@@ -144,7 +157,8 @@
                         @if($data->pagination->total_count == 0)
                             <tr>
                                 <td></td>
-                                <td colspan="7">لا يوجد عملاء</td>
+                                <td colspan="9">لا يوجد عملاء</td>
+                                <td style="display: none;"></td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>
