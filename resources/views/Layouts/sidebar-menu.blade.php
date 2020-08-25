@@ -59,6 +59,29 @@
                     </li>
                     @endif
 
+                    @if(\Helper::checkRules('list-currencies,list-details'))
+                    <li class="{{ Active(URL::to('/currencies*')) }} {{ Active(URL::to('/details*')) }}"><a><i class="fas fa-coins"></i> العملات والتحويلات <span class="fas fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                            @if(\Helper::checkRules('list-currencies'))
+                                <li class="{{ Active(URL::to('/currencies*')) }}"><a href="{{ URL::to('/currencies') }}">العملات</a></li>
+                            @endif
+                            @if(\Helper::checkRules('list-details'))
+                                <li class="{{ Active(URL::to('/details*')) }}"><a href="{{ URL::to('/details') }}">تحويلات العملات</a></li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(\Helper::checkRules('list-exchanges'))
+                    <li class="{{ Active(URL::to('/exchanges*')) }}"><a><i class="fas fa-exchange-alt"></i> عمليات الاستبدال <span class="fas fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                            @if(\Helper::checkRules('list-exchanges'))
+                                <li class="{{ Active(URL::to('/exchanges*')) }}"><a href="{{ URL::to('/exchanges') }}">عمليات الاستبدال</a></li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
                     @if(\Helper::checkRules('list-bank-account,list-storages'))
                     <li class="{{ Active(URL::to('/bank-accounts*')) }} {{ Active(URL::to('/storages*')) }}"><a><i class="fas fa-dollar-sign"></i> الحسابات البنكية والصناديق <span class="fas fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
@@ -96,12 +119,9 @@
                     </li>
                     @endif
 
-                    @if(\Helper::checkRules('list-currencies'))
-                    <li class="{{ Active(URL::to('/variables*')) }} {{ Active(URL::to('/currencies*')) }}"><a><i class="fas fa-cogs"></i> الاعدادات <span class="fas fa-chevron-down"></span></a>
+                    @if(\Helper::checkRules('list-variables'))
+                    <li class="{{ Active(URL::to('/variables*')) }}"><a><i class="fas fa-cogs"></i> الاعدادات <span class="fas fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
-                             @if(\Helper::checkRules('list-currencies'))
-                                <li class="{{ Active(URL::to('/currencies*')) }}"><a href="{{ URL::to('/currencies') }}">العملات</a></li>
-                            @endif
                             @if(\Helper::checkRules('list-variables'))
                                 <li class="{{ Active(URL::to('/variables*')) }}"><a href="{{ URL::to('/variables') }}">المتغيرات</a></li>
                             @endif

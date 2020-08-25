@@ -11,7 +11,7 @@
                         <ul class="nav navbar-right panel_toolbox">
                             <div align="right">
                                 <a href="{{ URL::to('/currencies') }}" class="btn btn-round btn-primary"><i class="fa fa-arrow-left"></i> الرجوع</a>
-                                @if(\Helper::checkRules('edit-currencغ'))
+                                @if(\Helper::checkRules('edit-currency'))
                                 <button type="submit" class="btn btn-round btn-success">حفظ <i class="fa fa-check"></i></button>
                                 @endif
                             </div>

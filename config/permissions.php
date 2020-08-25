@@ -67,6 +67,20 @@ return [
     'CurrenciesControllers@create' => 'add-currency',
     'CurrenciesControllers@delete' => 'delete-currency',
 
+    'DetailsControllers@index' => 'list-details',
+    'DetailsControllers@edit' => 'edit-details',
+    'DetailsControllers@update' => 'edit-details',
+    'DetailsControllers@add' => 'add-details',
+    'DetailsControllers@create' => 'add-details',
+    'DetailsControllers@delete' => 'delete-details',
+
+    'ExchangeControllers@index' => 'list-exchanges',
+    'ExchangeControllers@edit' => 'edit-exchange',
+    'ExchangeControllers@update' => 'edit-exchange',
+    'ExchangeControllers@add' => 'add-exchange',
+    'ExchangeControllers@create' => 'add-exchange',
+    'ExchangeControllers@delete' => 'delete-exchange',
+
     'ExpensesControllers@index' => 'list-expenses',
     'ExpensesControllers@edit' => 'edit-expense',
     'ExpensesControllers@update' => 'edit-expense',
