@@ -11,8 +11,8 @@ class Transfer extends Model{
     protected $primaryKey = 'id';
     public $timestamps = false;
 
-    function Client(){
-        return $this->belongsTo('App\Models\Client','client_id');
+    function Delegate(){
+        return $this->belongsTo('App\Models\Delegate','delegate_id');
     }
 
     function Currency(){
@@ -30,8 +30,8 @@ class Transfer extends Model{
         if (isset($input['currency_id']) && $input['currency_id'] != 0) {
             $source->where('currency_id', $input['currency_id']);
         }
-        if (isset($input['client_id']) && $input['client_id'] != 0) {
-            $source->where('client_id', $input['client_id']);
+        if (isset($input['delegate_id']) && $input['delegate_id'] != 0) {
+            $source->where('delegate_id', $input['delegate_id']);
         }
         if (isset($input['type']) && $input['type'] != 0) {
             $source->where('type', $input['type']);
@@ -70,8 +70,8 @@ class Transfer extends Model{
     static function getData($source) {
         $data = new  \stdClass();
         $data->id = $source->id;
-        $data->client_id = $source->client_id;
-        $data->client_name = $source->Client->name;
+        $data->delegate_id = $source->delegate_id;
+        $data->delegate_name = $source->Delegate->name;
         $data->currency_id = $source->currency_id;
         $data->currency_name = $source->Currency->name;
         $data->bank_account_id = $source->bank_account_id;

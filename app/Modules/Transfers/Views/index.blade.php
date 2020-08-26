@@ -12,7 +12,7 @@
                         <ul class="nav navbar-right panel_toolbox">
                             <div align="right">
                                 <button type="submit" class="btn btn-primary" style="width:110px;"><i class="fa fa-search"></i> بحث ..</button>
-                                @if(Input::has('company') || Input::has('bank_account_id') || Input::has('type') || Input::has('currency_id') || Input::has('client_id'))
+                                @if(Input::has('company') || Input::has('bank_account_id') || Input::has('type') || Input::has('currency_id') || Input::has('delegate_id'))
                                     <a href="{{ URL::to('/transfers') }}" type="submit" class="btn btn-danger" style="color: black;"><i class="fa fa-redo"></i></a>
                                 @endif
                                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
@@ -34,11 +34,11 @@
                             </div>
                             <div class="col-xs-6 col-md-3">
                                 <div class="form-group">
-                                    <label>العميل</label>
-                                    <select class="form-control select2" name="client_id">
-                                        <option value="0">اختر العميل</option>
-                                        @foreach($data->clients as $client)
-                                            <option value="{{ $client->id }}" {{ Input::get('client_id') == $client->id ? 'selected' : '' }}>{{ $client->name }}</option>
+                                    <label>المندوب</label>
+                                    <select class="form-control select2" name="delegate_id">
+                                        <option value="0">اختر المندوب</option>
+                                        @foreach($data->delegates as $delegate)
+                                            <option value="{{ $delegate->id }}" {{ Input::get('delegate_id') == $delegate->id ? 'selected' : '' }}>{{ $delegate->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -105,7 +105,7 @@
                         <tr>
                             <th>ID</th>
                             <th class="text-right">النوع</th>
-                            <th class="text-right">العميل</th>
+                            <th class="text-right">المندوب</th>
                             <th class="text-right">الحساب البنكي</th>
                             <th class="text-right">الشركة</th>
                             <th class="text-right">الرصيد</th>
@@ -119,7 +119,7 @@
                             <tr id="tableRaw{{ $value->id }}">
                                 <td width="3%">{{ $value->id }}</td>
                                 <td>{{ $value->type_text }}</td>
-                                <td>{{ $value->client_name }}</td>
+                                <td>{{ $value->delegate_name }}</td>
                                 <td>{{ $value->bank_account }}</td>
                                 <td>{{ $value->company }}</td>
                                 <td>{{ $value->balance }}</td>

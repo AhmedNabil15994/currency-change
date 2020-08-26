@@ -93,12 +93,19 @@ class Helper
         }
     }
 
-    Static function GeneratePagination($source){
+    Static function GeneratePagination($source,$withTest=null,$pagination=null){
         $uri = \Input::getUri();
         $count = count($source);
-        $total = $source->total();
-        $lastPage = $source->lastPage();
-        $currentPage = $source->currentPage();
+        if($withTest == null){
+            $total = $source->total();
+            $lastPage = $source->lastPage();
+            $currentPage = $source->currentPage();
+        }else{
+            $total = $withTest;
+            $lastPage = ceil($withTest / $pagination);
+            $currentPage = $source->currentPage();
+        }
+        
 
         $data = new \stdClass();
         $data->count = $count;

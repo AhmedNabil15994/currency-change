@@ -3,7 +3,7 @@
 use App\Models\Transfer;
 use App\Models\Currency;
 use App\Models\BankAccount;
-use App\Models\Client;
+use App\Models\Delegate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use Carbon\Carbon;
@@ -18,7 +18,7 @@ class TransfersControllers extends Controller {
         $rules = [
             'type' => 'required',
             'company' => 'required',
-            'client_id' => 'required',
+            'delegate_id' => 'required',
             'bank_account_id' => 'required',
             'balance' => 'required',
         ];
@@ -26,7 +26,7 @@ class TransfersControllers extends Controller {
         $message = [
             'type.required' => "يرجي اختيار نوع الحوالة البنكية",
             'company.required' => "يرجي ادخال اسم الشركة",
-            'client_id.required' => "يرجي اختيار العميل",
+            'delegate_id.required' => "يرجي اختيار المندوب",
             'bank_account_id.required' => "يرجي اختيار الحساب البنكي",
             'balance.required' => "يرجي ادخال الرصيد",
         ];
@@ -38,7 +38,7 @@ class TransfersControllers extends Controller {
 
     public function index() {
         $usersList = Transfer::dataList();
-        $usersList['clients'] = Client::dataList('no_paginate')['data'];
+        $usersList['delegates'] = Delegate::dataList('no_paginate')['data'];
         $usersList['accounts'] = BankAccount::dataList('no_paginate')['data'];
         $usersList['currencies'] = Currency::dataList('no_paginate')['data'];
         return view('Transfers.Views.index')
@@ -54,7 +54,7 @@ class TransfersControllers extends Controller {
             return Redirect('404');
         }
 
-        $data['clients'] = Client::dataList('no_paginate')['data'];
+        $data['delegates'] = Delegate::dataList('no_paginate')['data'];
         $data['accounts'] = BankAccount::dataList('no_paginate')['data'];
         $data['currencies'] = Currency::dataList('no_paginate')['data'];
         $data['data'] = Transfer::getData($userObj);
@@ -83,7 +83,7 @@ class TransfersControllers extends Controller {
         }
 
         $bankObj->type = $input['type'];
-        $bankObj->client_id = $input['client_id'];
+        $bankObj->delegate_id = $input['delegate_id'];
         $bankObj->company = $input['company'];
         $bankObj->currency_id = $bankAccount->currency_id;
         $bankObj->balance = $input['balance'];
@@ -98,7 +98,7 @@ class TransfersControllers extends Controller {
     }
 
     public function add() {
-        $data['clients'] = Client::dataList('no_paginate')['data'];
+        $data['delegates'] = Delegate::dataList('no_paginate')['data'];
         $data['accounts'] = BankAccount::dataList('no_paginate')['data'];
         $data['currencies'] = Currency::dataList('no_paginate')['data'];
         return view('Transfers.Views.add')->with('data', (object) $data);
@@ -121,7 +121,7 @@ class TransfersControllers extends Controller {
 
         $bankObj = new Transfer;
         $bankObj->type = $input['type'];
-        $bankObj->client_id = $input['client_id'];
+        $bankObj->delegate_id = $input['delegate_id'];
         $bankObj->company = $input['company'];
         $bankObj->currency_id = $bankAccount->currency_id;
         $bankObj->balance = $input['balance'];

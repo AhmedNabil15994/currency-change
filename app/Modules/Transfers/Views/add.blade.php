@@ -58,11 +58,11 @@
                                     <div class="row" >
                                         <div class="col-xs-12 col-sm-6 col-md-12">
                                             <div class="form-group">
-                                                <label>العميل</label>
-                                                <select name="client_id" class="form-control" required>
+                                                <label>المندوب</label>
+                                                <select name="delegate_id" class="form-control" required>
                                                     <option value="">اختر..</option>
-                                                    @foreach($data->clients as $client)
-                                                    <option value="{{ $client->id }}" {{ old('client_id') == $client->id ? 'selected' : '' }}>{{ $client->name }}</option>
+                                                    @foreach($data->delegates as $delegate)
+                                                    <option value="{{ $delegate->id }}" {{ old('delegate_id') == $delegate->id ? 'selected' : '' }}>{{ $delegate->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>

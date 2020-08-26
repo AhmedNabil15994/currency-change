@@ -26,9 +26,9 @@
                                 <div class="form-group">
                                     <label>الفرع</label>
                                     <select class="form-control" name="shop_id"> 
-                                        <option>اختر الفرع ...</option>
+                                        <option value="0">اختر الفرع ...</option>
                                         @foreach($data->shops as $shop)
-                                        <option value="{{ $shop->id }}" {{ Input::has('shop_id') == $shop->id ? 'selected' : '' }}>{{ $shop->title }}</option>
+                                        <option value="{{ $shop->id }}" {{ Input::get('shop_id') == $shop->id ? 'selected' : '' }}>{{ $shop->title }}</option>
                                         @endforeach 
                                     </select>
                                 </div>
@@ -38,9 +38,9 @@
                                     <div class="form-group">
                                         <label>العملة (من)</label>
                                         <select class="form-control" name="from_id"> 
-                                            <option>اختر العملة ...</option>
+                                            <option value="0">اختر العملة ...</option>
                                             @foreach($data->currencies as $currency)
-                                            <option value="{{ $currency->id }}" data-area="{{ $currency->code }}" {{ Input::has('from_id') == $currency->id ? 'selected' : '' }}>{{ $currency->name }}</option>
+                                            <option value="{{ $currency->id }}" data-area="{{ $currency->code }}" {{ Input::get('from_id') == $currency->id ? 'selected' : '' }}>{{ $currency->name }}</option>
                                             @endforeach 
                                         </select>
                                     </div>
@@ -50,9 +50,9 @@
                                 <div class="form-group">
                                     <label>العملة (الي)</label>
                                     <select class="form-control" name="to_id"> 
-                                        <option>اختر العملة ...</option>
+                                        <option value="0">اختر العملة ...</option>
                                         @foreach($data->currencies as $currency)
-                                        <option value="{{ $currency->id }}" data-area="{{ $currency->code }}" {{ Input::has('to_id') == $currency->id ? 'selected' : '' }}>{{ $currency->name }}</option>
+                                        <option value="{{ $currency->id }}" data-area="{{ $currency->code }}" {{ Input::get('to_id') == $currency->id ? 'selected' : '' }}>{{ $currency->name }}</option>
                                         @endforeach 
                                     </select>
                                 </div>
@@ -61,6 +61,7 @@
                                 <div class="form-group">
                                     <label>نوع العميل</label>
                                     <select class="form-control" name="type">
+                                        <option value="0">اختر نوع العميل</option>
                                         <option value="1" {{ Input::has('type') && Input::get('type') == 1 ? 'selected': '' }}>عميل</option>
                                         <option value="2" {{ Input::get('type') == 2 ? 'selected': '' }}>مندوب</option>
                                     </select>
@@ -70,9 +71,9 @@
                                 <div class="form-group">
                                     <label>العميل</label>
                                     <select class="form-control" name="client_id"> 
-                                        <option>اختر العميل ...</option>
+                                        <option value="0">اختر العميل ...</option>
                                         @foreach($data->clients as $client)
-                                        <option value="{{ $client->id }}" {{ Input::has('client_id') == $client->id ? 'selected' : '' }}>{{ $client->name }}</option>
+                                        <option value="{{ $client->id }}" {{ Input::get('client_id') == $client->id ? 'selected' : '' }}>{{ $client->name }}</option>
                                         @endforeach 
                                     </select>
                                 </div>
@@ -81,9 +82,9 @@
                                 <div class="form-group">
                                     <label>المندوب</label>
                                     <select class="form-control" name="delegate_id"> 
-                                        <option>اختر المندوب ...</option>
+                                        <option value="0">اختر المندوب ...</option>
                                         @foreach($data->delegates as $delegate)
-                                        <option value="{{ $delegate->id }}" {{ Input::has('delegate_id') == $delegate->id ? 'selected' : '' }}>{{ $delegate->name }}</option>
+                                        <option value="{{ $delegate->id }}" {{ Input::get('delegate_id') == $delegate->id ? 'selected' : '' }}>{{ $delegate->name }}</option>
                                         @endforeach 
                                     </select>
                                 </div>
@@ -128,6 +129,7 @@
                             <th class="text-right">سعر التحويل</th>
                             <th class="text-right">الكمية</th>
                             <th class="text-right">مستحقات العميل</th>
+                            <th>التاريخ</th>
                             <th>العمليات</th>
                         </tr>
                         </thead>
@@ -143,6 +145,7 @@
                                 <td>1 {{ $value->from->name }} == {{ $value->convert_price }} {{ $value->to->name }}</td>
                                 <td>{{ $value->amount }} {{ $value->from->name }}</td>
                                 <td>{{ $value->paid }} {{ $value->to->name }}</td>
+                                <td>{{ $value->created_at }}</td>
                                 <td class="actions" width="15%" align="left">
                                     @if(\Helper::checkRules('edit-exchange'))
                                         <a href="{{ URL::to('/exchanges/edit/' . $value->id) }}" class="btn btn-info btn-xs"><i class="fa fa-pencil-alt"></i> تعديل </a>
@@ -157,7 +160,8 @@
                         @if($data->pagination->total_count == 0)
                             <tr>
                                 <td></td>
-                                <td colspan="9">لا يوجد عملاء</td>
+                                <td colspan="10">لا يوجد عملاء</td>
+                                <td style="display: none;"></td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>

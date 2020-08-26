@@ -119,6 +119,29 @@
                     </li>
                     @endif
 
+                    <li class="{{ Active(URL::to('/reports*')) }}"><a><i class="fas fa-file"></i> التقارير <span class="fas fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                            @if(\Helper::checkRules('list-expenses-reports'))
+                                <li class="{{ Active(URL::to('/reports/expenses')) }}"><a href="{{ URL::to('/reports/expenses') }}">تقارير المصروفات العمومية</a></li>
+                            @endif
+                            @if(\Helper::checkRules('list-storages-reports'))
+                                <li class="{{ Active(URL::to('/reports/storages*')) }}"><a href="{{ URL::to('/reports/storages') }}">تقارير حساب الصندوق</a></li>
+                            @endif
+                            @if(\Helper::checkRules('list-bank-accounts-reports'))
+                                <li class="{{ Active(URL::to('/reports/bankAccounts*')) }}"><a href="{{ URL::to('/reports/bankAccounts') }}">تقارير حساب البنك</a></li>
+                            @endif
+                            @if(\Helper::checkRules('list-delegates-reports'))
+                                <li class="{{ Active(URL::to('/reports/delegates*')) }}"><a href="{{ URL::to('/reports/delegates') }}">تقارير المندوبين</a></li>
+                            @endif
+                            @if(\Helper::checkRules('list-daily-reports'))
+                                <li class="{{ Active(URL::to('/reports/daily*')) }}"><a href="{{ URL::to('/reports/daily') }}">التقارير اليومية</a></li>
+                            @endif
+                            @if(\Helper::checkRules('list-yearly-reports'))
+                                <li class="{{ Active(URL::to('/reports/yearly*')) }}"><a href="{{ URL::to('/reports/yearly') }}">التقارير السنوية</a></li>
+                            @endif
+                        </ul>
+                    </li>
+
                     @if(\Helper::checkRules('list-variables'))
                     <li class="{{ Active(URL::to('/variables*')) }}"><a><i class="fas fa-cogs"></i> الاعدادات <span class="fas fa-chevron-down"></span></a>
                         <ul class="nav child_menu">

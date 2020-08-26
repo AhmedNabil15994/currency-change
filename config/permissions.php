@@ -112,4 +112,11 @@ return [
     'TransfersControllers@create' => 'add-transfer',
     'TransfersControllers@delete' => 'delete-transfer',
 
+    'ReportsControllers@expenses' => 'list-expenses-reports',
+    'ReportsControllers@storages' => 'list-storages-reports',
+    'ReportsControllers@bankAccounts' => 'list-bank-accounts-reports',
+    'ReportsControllers@delegates' => 'list-delegates-reports',
+    'ReportsControllers@daily' => 'list-daily-reports',
+    'ReportsControllers@yearly' => 'list-yearly-reports',
+
 ];
