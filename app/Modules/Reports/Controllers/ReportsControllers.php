@@ -258,6 +258,7 @@ class ReportsControllers extends Controller {
                     $exchangeObj->rate = $exchange->convert_price;
                 }
                 $exchangeObj->dayen = $exchangeObj->amount;
+                $exchangeObj->currency = $exchangeObj->from->title;
                 $exchangeObj->modein = 0;
                 $exchangeObj->created_at = date('Y-m-d',strtotime($exchange->created_at));
                 $data[] = $exchangeObj;
@@ -275,6 +276,7 @@ class ReportsControllers extends Controller {
                     $exchangeObj2->amount = $exchange->paid;
                     $exchangeObj2->rate = $exchange->convert_price;
                 }
+                $exchangeObj2->currency = $exchangeObj2->to->title;
                 $exchangeObj2->dayen = 0;
                 $exchangeObj2->modein = $exchangeObj2->amount;
                 $exchangeObj2->created_at = date('Y-m-d',strtotime($exchange->created_at));
@@ -290,6 +292,7 @@ class ReportsControllers extends Controller {
             $transferObj->commssion = $commissionObj != null ? $commissionObj->commission : 0;
             $transferObj->user_name = $transfer->delegate_name;
             $transferObj->amount = $transfer->balance;
+            $transferObj->currency = $transferObj->currency_name;
             $transferObj->rate = 1;
             if($transfer->type == 1){
                 $transferObj->type_text = 'ايداع';

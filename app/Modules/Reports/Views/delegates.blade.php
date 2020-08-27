@@ -109,7 +109,7 @@
                                     <td width="3%">{{ $key+1 }}</td>
                                     <td>{{ $value->user_name }}</td>
                                     <td>{{ $value->type_text }}</td>
-                                    <td>{{ $value->amount }}</td>
+                                    <td>{{ $value->amount }} {{ $value->currency }}</td>
                                     <td>{{ $value->rate }}</td>
                                     <td>{{ $value->commssion }}</td>
                                     <td>{{ $value->dayen }}</td>
