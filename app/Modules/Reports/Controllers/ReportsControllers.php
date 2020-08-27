@@ -257,7 +257,7 @@ class ReportsControllers extends Controller {
                     $exchangeObj->amount = $exchange->paid;
                     $exchangeObj->rate = $exchange->convert_price;
                 }
-                $exchangeObj->dayen = $exchange->amount;
+                $exchangeObj->dayen = $exchangeObj->amount;
                 $exchangeObj->modein = 0;
                 $exchangeObj->created_at = date('Y-m-d',strtotime($exchange->created_at));
                 $data[] = $exchangeObj;
@@ -276,10 +276,10 @@ class ReportsControllers extends Controller {
                     $exchangeObj2->rate = $exchange->convert_price;
                 }
                 $exchangeObj2->dayen = 0;
-                $exchangeObj2->modein = $exchange->amount;
+                $exchangeObj2->modein = $exchangeObj2->amount;
                 $exchangeObj2->created_at = date('Y-m-d',strtotime($exchange->created_at));
                 $data[] = $exchangeObj2;
-                @$totalWithdraw[$exchange->user_id] = $totalWithdraw[$exchange->user_id] + $exchangeObj->amount;
+                @$totalWithdraw[$exchange->user_id] = $totalWithdraw[$exchange->user_id] + $exchangeObj2->amount;
             }
         }
 
@@ -287,18 +287,6 @@ class ReportsControllers extends Controller {
         foreach ($transfers as $transfer) {
             $commissionObj = Commission::NotDeleted()->where('delegate_id',$transfer->delegate_id)->where('valid_until','>=',$transfer->created_at)->where('is_active',1)->orderBy('valid_until','ASC')->first();
             $transferObj = new \stdClass();
-            if($transfer->type == 1){
-                $transferObj->type_text = 'ايداع';
-                $transferObj->type = 1;
-                $transferObj->dayen = $transfer->balance;
-                $transferObj->modein = 0;
-            }else{
-                $transferObj->type_text = 'سحب';
-                $transferObj->type = 2;
-                $transferObj->dayen = 0;
-                $transferObj->modein = $transfer->balance;
-            }
-            
             $transferObj->commssion = $commissionObj != null ? $commissionObj->commission : 0;
             $transferObj->user_name = $transfer->delegate_name;
             if($transfer->currency_id == 1){
@@ -308,13 +296,27 @@ class ReportsControllers extends Controller {
                 $transferObj->amount = $transfer->balance;
                 $transferObj->rate = \Helper::convertHistorical(1,$transfer->currency_id,date('Y-m-d',strtotime($transfer->created_at)));
             }
+            if($transfer->type == 1){
+                $transferObj->type_text = 'ايداع';
+                $transferObj->type = 1;
+                $transferObj->dayen = $transfer->balance;
+                $transferObj->modein = 0;
+                @$totalDeposit[$transfer->delegate_id] = $totalDeposit[$transfer->delegate_id] + $transferObj->amount;
+            }else{
+                $transferObj->type_text = 'سحب';
+                $transferObj->type = 2;
+                $transferObj->dayen = 0;
+                $transferObj->modein = $transfer->balance;
+                @$totalWithdraw[$transfer->delegate_id] = $totalWithdraw[$transfer->delegate_id] + $transferObj->amount;
+            }
             $transferObj->created_at = date('Y-m-d',strtotime($transfer->created_at));
             $data[] = $transferObj;
-            @$totalDeposit[$transfer->user_id] = $totalDeposit[$transfer->user_id] + $transferObj->amount;
         }
 
         $dataList = $this->setPaginationForArray($data);
         $dataList['data_count'] = count($data);
+        $dataList['totalWithdraw'] = $totalWithdraw;
+        $dataList['totalDeposit'] = $totalDeposit;
         $dataList['delegates'] = Delegate::dataList('no_paginate')['data'];
         return view('Reports.Views.delegates')
             ->with('data', (Object) $dataList);

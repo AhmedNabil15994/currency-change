@@ -83,6 +83,12 @@
 
                 <div class="x_content x_content_table">
                     <div class="panel-body">
+                        @if(Input::has('user_id'))
+                        <div class="row" style="margin-bottom: 15px;font-size: 16px;">
+                            <div class="col-xs-6"><b>اجمالي الايداع: {{ $data->totalDeposit[Input::get('user_id')] }}</b></div>
+                            <div class="col-xs-6"><b>اجمالي السحب: {{ $data->totalWithdraw[Input::get('user_id')] }}</b></div>
+                        </div>
+                        @endif
                         <table id="tableList" class="table hover table-striped table-bordered">
                             <thead>
                             <tr>
