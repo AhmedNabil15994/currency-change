@@ -93,7 +93,7 @@ class DetailsControllers extends Controller {
         $userObj->from_id = $input['from_id'];
         $userObj->to_id = $input['to_id'];
         $userObj->type = $input['type'];
-        $userObj->rate = doubleval($input['rate']);
+        $userObj->rate = floatval($input['rate']);
         $userObj->is_active = isset($input['active']) ? 1 : 0;
         $userObj->updated_at = DATE_TIME;
         $userObj->updated_by = USER_ID;
@@ -135,7 +135,7 @@ class DetailsControllers extends Controller {
         }
 
         if(Details::checkRecord($input['from_id'],$input['to_id']) != null){
-            \Session::flash('error', "هذا رقم التليفون مستخدم من قبل");
+            \Session::flash('error', "هذا التحويلة موجودة من قبل");
             return redirect()->back()->withInput();
         }
 
@@ -143,7 +143,7 @@ class DetailsControllers extends Controller {
         $detailsObj->from_id = $input['from_id'];
         $detailsObj->to_id = $input['to_id'];
         $detailsObj->type = $input['type'];
-        $detailsObj->rate = doubleval($input['rate']);
+        $detailsObj->rate = floatval($input['rate']);
         $detailsObj->is_active = isset($input['active']) ? 1 : 0;
         $detailsObj->created_at = DATE_TIME;
         $detailsObj->created_by = USER_ID;
