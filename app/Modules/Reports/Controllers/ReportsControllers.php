@@ -289,13 +289,8 @@ class ReportsControllers extends Controller {
             $transferObj = new \stdClass();
             $transferObj->commssion = $commissionObj != null ? $commissionObj->commission : 0;
             $transferObj->user_name = $transfer->delegate_name;
-            if($transfer->currency_id == 1){
-                $transferObj->amount = $transfer->balance;
-                $transferObj->rate = 1;
-            }else{
-                $transferObj->amount = $transfer->balance;
-                $transferObj->rate = \ConvertCurrency::convertHistorical(1,$transfer->currency_id,date('Y-m-d',strtotime($transfer->created_at)));
-            }
+            $transferObj->amount = $transfer->balance;
+            $transferObj->rate = 1;
             if($transfer->type == 1){
                 $transferObj->type_text = 'ايداع';
                 $transferObj->type = 1;
