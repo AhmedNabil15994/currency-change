@@ -9,6 +9,11 @@
     textarea{
         margin-bottom: 15px;
     }
+    .dt-buttons.btn-group,
+    #example_filter,
+    .dataTables_paginate{
+        display: none;
+    }
 </style>
 @endsection
 @section('content')
@@ -74,6 +79,7 @@
                         </div>
                         <div class="col-xs-6 text-right">
                             <ul class="nav navbar-right " style="padding-top: 1%">
+                                <a href="#" class="btn btn-default print" style="color: black;"><i class="fa fa-print"></i> طباعة</a>
                                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                             </ul>
                         </div>
@@ -83,13 +89,7 @@
 
                 <div class="x_content x_content_table">
                     <div class="panel-body">
-                        @if(Input::has('user_id'))
-                        <div class="row" style="margin-bottom: 15px;font-size: 16px;">
-                            <div class="col-xs-6"><b>اجمالي الايداع: {{ $data->totalDeposit[Input::get('user_id')] }}</b></div>
-                            <div class="col-xs-6"><b>اجمالي السحب: {{ $data->totalWithdraw[Input::get('user_id')] }}</b></div>
-                        </div>
-                        @endif
-                        <table id="tableList" class="table hover table-striped table-bordered">
+                        <table id="example" class="table hover table-striped table-bordered">
                             <thead>
                             <tr>
                                 <th>ID</th>
@@ -106,7 +106,7 @@
                             <tbody>
                             @foreach($data->data as $key => $value)
                                 <tr id="tableRaw">
-                                    <td width="3%">{{ $key++ }}</td>
+                                    <td width="3%">{{ $key+1 }}</td>
                                     <td>{{ $value->user_name }}</td>
                                     <td>{{ $value->type_text }}</td>
                                     <td>{{ $value->amount }}</td>
@@ -117,6 +117,21 @@
                                     <td>{{ $value->created_at }}</td>
                                 </tr>
                             @endforeach
+                            @if(Input::has('user_id') && $data->pagination->total_count > 0)
+                            <tr>
+                                <td>{{ $key+2 }}</td>
+                                <td><b>اجمالي الايداع:</b></td>
+                                <td colspan="3"><b>{{ @$data->totalDeposit[Input::get('user_id')] }}</b></td>
+                                <td><b>اجمالي السحب:</b></td>
+                                <td colspan="3"><b>{{ @$data->totalWithdraw[Input::get('user_id')] }}</b></td>
+                                <td style="display: none;"></td>
+                                <td style="display: none;"></td>
+                                <td style="display: none;"></td>
+                                <td style="display: none;"></td>
+                                <td style="display: none;"></td>
+                                <td style="display: none;"></td>
+                            </tr>    
+                            @endif
                             @if($data->pagination->total_count == 0)
                                 <tr>
                                     <td></td>
@@ -141,3 +156,7 @@
 
     </div>
 @stop()
+
+@section('script')
+<script src="{{ URL::to('/assets/components/delegates-reports.js') }}"></script>
+@endsection
