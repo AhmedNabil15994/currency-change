@@ -294,7 +294,7 @@ class ReportsControllers extends Controller {
                 $transferObj->rate = 1;
             }else{
                 $transferObj->amount = $transfer->balance;
-                $transferObj->rate = \Helper::convertHistorical(1,$transfer->currency_id,date('Y-m-d',strtotime($transfer->created_at)));
+                $transferObj->rate = \ConvertCurrency::convertHistorical(1,$transfer->currency_id,date('Y-m-d',strtotime($transfer->created_at)));
             }
             if($transfer->type == 1){
                 $transferObj->type_text = 'ايداع';
