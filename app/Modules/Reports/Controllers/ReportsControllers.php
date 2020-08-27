@@ -258,7 +258,7 @@ class ReportsControllers extends Controller {
                     $exchangeObj->rate = $exchange->convert_price;
                 }
                 $exchangeObj->dayen = $exchangeObj->amount;
-                $exchangeObj->currency = $exchange->from->title;
+                $exchangeObj->currency = $exchange->from->name;
                 $exchangeObj->modein = 0;
                 $exchangeObj->created_at = date('Y-m-d',strtotime($exchange->created_at));
                 $data[] = $exchangeObj;
@@ -276,7 +276,7 @@ class ReportsControllers extends Controller {
                     $exchangeObj2->amount = $exchange->paid;
                     $exchangeObj2->rate = $exchange->convert_price;
                 }
-                $exchangeObj2->currency = $exchange->to->title;
+                $exchangeObj2->currency = $exchange->to->name;
                 $exchangeObj2->dayen = 0;
                 $exchangeObj2->modein = $exchangeObj2->amount;
                 $exchangeObj2->created_at = date('Y-m-d',strtotime($exchange->created_at));
