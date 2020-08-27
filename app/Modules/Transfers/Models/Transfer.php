@@ -33,6 +33,9 @@ class Transfer extends Model{
         if (isset($input['delegate_id']) && $input['delegate_id'] != 0) {
             $source->where('delegate_id', $input['delegate_id']);
         }
+        if (isset($input['user_id']) && $input['user_id'] != 0) {
+            $source->where('delegate_id', $input['user_id']);
+        }
         if (isset($input['type']) && $input['type'] != 0) {
             $source->where('type', $input['type']);
         }
@@ -41,6 +44,16 @@ class Transfer extends Model{
         }
         if (isset($input['company']) && !empty($input['company'])) {
             $source->where('company', 'LIKE', '%' . $input['company'] . '%');
+        }
+        if (isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])) {
+            $source->where('created_at','>=',$input['from'].' 00:00:00')->where('created_at','<=',$input['to'].' 23:59:59');
+        }
+        if (!IS_ADMIN) {
+            $source->whereHas('Delegate',function($delegateQuery){
+                $delegateQuery->where('shop_id', 'LIKE', '%' .','.\Session::get('shop_id') . '%')
+                   ->orWhere('shop_id', 'LIKE', '%' .\Session::get('shop_id').',' . '%')
+                   ->orWhere('shop_id', \Session::get('shop_id'));
+            });
         }
 
         $source->orderBy('id','DESC');
@@ -83,6 +96,7 @@ class Transfer extends Model{
         $data->type_text = $source->type == 1 ? "وارد" : "صادر";
         $data->active = $source->is_active == 1 ? "مفعل" : "غير مفعل";
         $data->is_active = $source->is_active;
+        $data->created_at = $source->created_at;
         return $data;
     }
 

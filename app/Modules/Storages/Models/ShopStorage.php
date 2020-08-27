@@ -29,6 +29,9 @@ class ShopStorage extends Model{
         if (isset($input['currency_id']) && $input['currency_id'] != 0) {
             $source->where('currency_id', $input['currency_id']);
         }
+        if (!IS_ADMIN) {
+            $source->where('shop_id', \Session::get('shop_id'));
+        }
 
         $source->groupBy('shop_id')->orderBy('id','DESC');
         return self::generateObj($source,$withPaginate);

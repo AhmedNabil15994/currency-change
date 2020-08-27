@@ -45,7 +45,15 @@ class Exchange extends Model{
         if (isset($input['delegate_id']) && !empty($input['delegate_id'])) {
             $source->where('type',2)->where('user_id', $input['delegate_id']);
         }
-        
+        if (isset($input['user_id']) && !empty($input['user_id'])) {
+            $source->where('type',2)->where('user_id', $input['user_id']);
+        }
+        if (isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])) {
+            $source->where('created_at','>=',$input['from'].' 00:00:00')->where('created_at','<=',$input['to'].' 23:59:59');
+        }
+        if (!IS_ADMIN) {
+            $source->where('shop_id', \Session::get('shop_id'));
+        }
 
         $source->orderBy('id','DESC');
         return self::generateObj($source,$withPaginate);

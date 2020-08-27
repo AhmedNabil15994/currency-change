@@ -28,6 +28,13 @@ class Commission extends Model{
         if (isset($input['delegate_id']) && !empty($input['delegate_id'])) {
             $source->where('delegate_id', $input['delegate_id']);
         }
+        if (!IS_ADMIN) {
+            $source->whereHas('Delegate',function($delegateQuery){
+                $delegateQuery->where('shop_id', 'LIKE', '%' .','.\Session::get('shop_id') . '%')
+                   ->orWhere('shop_id', 'LIKE', '%' .\Session::get('shop_id').',' . '%')
+                   ->orWhere('shop_id', \Session::get('shop_id'));
+            });
+        }
 
         $source->orderBy('id','DESC');
         return self::generateObj($source);

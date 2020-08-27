@@ -27,6 +27,12 @@ class Delegate extends Model{
                    ->orWhere('shop_id', $input['shop_id']);
         }
 
+        if (!IS_ADMIN) {
+            $source->where('shop_id', 'LIKE', '%' .','.\Session::get('shop_id') . '%')
+                   ->orWhere('shop_id', 'LIKE', '%' .\Session::get('shop_id').',' . '%')
+                   ->orWhere('shop_id', \Session::get('shop_id'));
+        }
+
         $source->orderBy('id','DESC');
         return self::generateObj($source,$withPaginate);
     }

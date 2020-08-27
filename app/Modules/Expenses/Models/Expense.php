@@ -49,12 +49,8 @@ class Expense extends Model{
             $source->where('created_at','>=',$input['from'].' 00:00:00')->where('created_at','<=',$input['to'].' 23:59:59');
         }
 
-        if(\Session::get('group_id') != 1){
+        if(!IS_ADMIN){
             $source->where('shop_id',\Session::get('shop_id'));
-        }
-
-        if(\Session::get('group_id') == 2){
-            $source->where('type','!=',3)->where('created_at','>=',date('Y-m-d').' 00:00:00')->where('created_at','<=',date('Y-m-d').' 23:59:59');
         }
 
         $source->orderBy('id','DESC');

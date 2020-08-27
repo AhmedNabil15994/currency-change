@@ -6,7 +6,9 @@ use App\Models\Currency;
 use App\Models\Profile;
 use App\Models\Transfer;
 use App\Models\BankAccount;
+use App\Models\Commission;
 use App\Models\User;
+use App\Models\Delegate;
 use App\Models\Exchange;
 use Illuminate\Support\Facades\Input;
 use \Session;
@@ -161,7 +163,7 @@ class ReportsControllers extends Controller {
         return $balances;
     }
 
-    public function getDeterminedBalances($totals,$expeses){        
+    public function getDeterminedBalances($totals,$expeses){
         foreach ($totals as $key=> $oneStorage) {
             if(isset($expeses[$key])){
                 $totals[$key][0] = $totals[$key][0] - $expeses[$key][0][0];
@@ -236,7 +238,86 @@ class ReportsControllers extends Controller {
     }
 
     public function delegates(){
-        
+        $data = [];
+        $exchanges = Exchange::dataList('no_paginate')['data'];
+        $totalWithdraw = [];
+        $totalDeposit = [];
+        foreach ($exchanges as $exchange) {
+            if($exchange->type == 2){
+                $commissionObj = Commission::NotDeleted()->where('delegate_id',$exchange->user_id)->where('valid_until','>=',$exchange->created_at)->where('is_active',1)->orderBy('valid_until','ASC')->first();
+                $exchangeObj = new \stdClass();
+                $exchangeObj->type_text = 'ايداع';
+                $exchangeObj->type = 1;
+                $exchangeObj->commssion = $commissionObj != null ? $commissionObj->commission : 0;
+                $exchangeObj->user_name = $exchange->user_name;
+                if($exchange->from_id == 1){
+                    $exchangeObj->amount = $exchange->amount;
+                    $exchangeObj->rate = 1;
+                }else{
+                    $exchangeObj->amount = $exchange->paid;
+                    $exchangeObj->rate = $exchange->convert_price;
+                }
+                $exchangeObj->dayen = $exchange->amount;
+                $exchangeObj->modein = 0;
+                $exchangeObj->created_at = date('Y-m-d',strtotime($exchange->created_at));
+                $data[] = $exchangeObj;
+                @$totalDeposit[$exchange->user_id] = $totalDeposit[$exchange->user_id] + $exchangeObj->amount;
+              
+                $exchangeObj2 = new \stdClass();
+                $exchangeObj2->type_text = 'سحب';
+                $exchangeObj2->commssion = 1;
+                $exchangeObj2->type = 2;
+                $exchangeObj2->user_name = $exchange->user_name;
+                if($exchange->to_id == 1){
+                    $exchangeObj2->amount = $exchange->amount;
+                    $exchangeObj2->rate = 1;
+                }else{
+                    $exchangeObj2->amount = $exchange->paid;
+                    $exchangeObj2->rate = $exchange->convert_price;
+                }
+                $exchangeObj2->dayen = 0;
+                $exchangeObj2->modein = $exchange->amount;
+                $exchangeObj2->created_at = date('Y-m-d',strtotime($exchange->created_at));
+                $data[] = $exchangeObj2;
+                @$totalWithdraw[$exchange->user_id] = $totalWithdraw[$exchange->user_id] + $exchangeObj->amount;
+            }
+        }
+
+        $transfers = Transfer::dataList('no_paginate')['data'];
+        foreach ($transfers as $transfer) {
+            $commissionObj = Commission::NotDeleted()->where('delegate_id',$transfer->delegate_id)->where('valid_until','>=',$transfer->created_at)->where('is_active',1)->orderBy('valid_until','ASC')->first();
+            $transferObj = new \stdClass();
+            if($transfer->type == 1){
+                $transferObj->type_text = 'ايداع';
+                $transferObj->type = 1;
+                $transferObj->dayen = $transfer->balance;
+                $transferObj->modein = 0;
+            }else{
+                $transferObj->type_text = 'سحب';
+                $transferObj->type = 2;
+                $transferObj->dayen = 0;
+                $transferObj->modein = $transfer->balance;
+            }
+            
+            $transferObj->commssion = $commissionObj != null ? $commissionObj->commission : 0;
+            $transferObj->user_name = $transfer->delegate_name;
+            if($transfer->currency_id == 1){
+                $transferObj->amount = $transfer->balance;
+                $transferObj->rate = 1;
+            }else{
+                $transferObj->amount = $transfer->balance;
+                $transferObj->rate = \Helper::convertHistorical(1,$transfer->currency_id,date('Y-m-d',strtotime($transfer->created_at)));
+            }
+            $transferObj->created_at = date('Y-m-d',strtotime($transfer->created_at));
+            $data[] = $transferObj;
+            @$totalDeposit[$transfer->user_id] = $totalDeposit[$transfer->user_id] + $transferObj->amount;
+        }
+
+        $dataList = $this->setPaginationForArray($data);
+        $dataList['data_count'] = count($data);
+        $dataList['delegates'] = Delegate::dataList('no_paginate')['data'];
+        return view('Reports.Views.delegates')
+            ->with('data', (Object) $dataList);
     }
 
     public function daily(){
@@ -261,10 +342,8 @@ class ReportsControllers extends Controller {
         $currencyArray = Currency::NotDeleted()->orderBy('id','ASC')->pluck('name');
         $currencyArray = reset($currencyArray);
 
-        // $expenseData = $this->prepareStorageData($data,$totals,$expenses,0);
         $outcomingAllData = $this->prepareStorageDataForDay(0,$data,$totals,$outComingData,0);
         $incomingAllData = $this->prepareStorageDataForDay(0,$outcomingAllData[0],$outcomingAllData[1],$inComingData,1);
-
 
         $bankAccounts = BankAccount::reportList($this->shops,null,'no_paginate')['data'];
         $banksData = [];
@@ -292,7 +371,7 @@ class ReportsControllers extends Controller {
             }
         }
 
-        // dd($bankAccountAllData[1]);
+
         $expenses = Expense::NotDeleted()->whereIn('shop_id',$this->shops)->where(function($whereQuery) use ($input){
             if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
                 $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
