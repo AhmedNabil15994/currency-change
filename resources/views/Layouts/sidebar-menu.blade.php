@@ -23,7 +23,7 @@
         <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
             <div class="menu_section">
                 <ul class="nav side-menu">
-                    <li class="{{ Active(URL::to('/')) }}"><a href="{{ URL::to('/') }}"><i class="fas fa-home"></i> الرئيسية</a></li>
+                    {{-- <li class="{{ Active(URL::to('/')) }}"><a href="{{ URL::to('/') }}"><i class="fas fa-home"></i> الرئيسية</a></li> --}}
 
                     @if(\Helper::checkRules('list-users,list-groups,list-shops'))
                     <li class="{{ Active(URL::to('/users*')) }} {{ Active(URL::to('/groups*')) }} {{ Active(URL::to('/shops*')) }}"><a><i class="fas fa-users"></i> المستخدمين و الفروع <span class="fas fa-chevron-down"></span></a>
@@ -142,7 +142,7 @@
                         </ul>
                     </li>
 
-                    @if(\Helper::checkRules('list-variables'))
+                    {{-- @if(\Helper::checkRules('list-variables'))
                     <li class="{{ Active(URL::to('/variables*')) }}"><a><i class="fas fa-cogs"></i> الاعدادات <span class="fas fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
                             @if(\Helper::checkRules('list-variables'))
@@ -150,7 +150,7 @@
                             @endif
                         </ul>
                     </li>
-                    @endif
+                    @endif --}}
 
                 </ul>
             </div>

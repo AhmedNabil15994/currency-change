@@ -4,6 +4,8 @@ use App\Models\Expense;
 use App\Models\ShopStorage;
 use App\Models\Currency;
 use App\Models\Profile;
+use App\Models\Transfer;
+use App\Models\BankAccount;
 use App\Models\User;
 use App\Models\Exchange;
 use Illuminate\Support\Facades\Input;
@@ -71,6 +73,48 @@ class ReportsControllers extends Controller {
         return [$data,$totals];
     }
 
+    public function prepareStorageDataForDay($dataType,$data,$totals,$loopData,$type){
+        foreach ($loopData as $expense) {
+            $currency = isset($expense->currency) ? $expense->currency : 1;
+            $currencyIndex = $currency - 1;
+            if(!isset($data[$expense->created_at][$dataType][$expense->shop_id])){
+                $data[$expense->created_at][$dataType][$expense->shop_id] = [[0,0,0,0,0,0],[0,0,0,0,0,0]];
+                $data[$expense->created_at][$dataType][$expense->shop_id][$type][$currencyIndex] = $data[$expense->created_at][$dataType][$expense->shop_id][$type][$currencyIndex] + $expense->myTotal;
+            }else{
+                $data[$expense->created_at][$dataType][$expense->shop_id][$type][$currencyIndex] = $data[$expense->created_at][$dataType][$expense->shop_id][$type][$currencyIndex] + $expense->myTotal;
+            }
+
+            if(!isset($totals[$dataType][$expense->shop_id])){
+                $totals[$dataType][$expense->shop_id] = [[0,0,0,0,0,0],[0,0,0,0,0,0]];
+                @$totals[$dataType][$expense->shop_id][$type][$currencyIndex] = $totals[$expense->shop_id][$type][$currencyIndex] + $expense->myTotal;
+            }else{
+                $totals[$dataType][$expense->shop_id][$type][$currencyIndex] = $totals[$dataType][$expense->shop_id][$type][$currencyIndex] + $expense->myTotal;
+            }
+        }
+        return [$data,$totals];
+    }
+
+    public function prepareStorageDataForDay2($dataType,$data,$totals,$loopData,$type){
+        foreach ($loopData as $expense) {
+            $currency = isset($expense->currency) ? $expense->currency : 1;
+            $currencyIndex = $currency - 1;
+            if(!isset($data[$expense->created_at][$dataType][$expense->bank_account_id])){
+                $data[$expense->created_at][$dataType][$expense->bank_account_id] = [[0,0,0,0,0,0],[0,0,0,0,0,0]];
+                $data[$expense->created_at][$dataType][$expense->bank_account_id][$type][$currencyIndex] = $data[$expense->created_at][$dataType][$expense->bank_account_id][$type][$currencyIndex] + $expense->myTotal;
+            }else{
+                $data[$expense->created_at][$dataType][$expense->bank_account_id][$type][$currencyIndex] = $data[$expense->created_at][$dataType][$expense->bank_account_id][$type][$currencyIndex] + $expense->myTotal;
+            }
+
+            if(!isset($totals[$dataType][$expense->bank_account_id])){
+                $totals[$dataType][$expense->bank_account_id] = [[0,0,0,0,0,0],[0,0,0,0,0,0]];
+                @$totals[$dataType][$expense->bank_account_id][$type][$currencyIndex] = $totals[$expense->bank_account_id][$type][$currencyIndex] + $expense->myTotal;
+            }else{
+                $totals[$dataType][$expense->bank_account_id][$type][$currencyIndex] = $totals[$dataType][$expense->bank_account_id][$type][$currencyIndex] + $expense->myTotal;
+            }
+        }
+        return [$data,$totals];
+    }
+
     public function setPaginationForArray($allData){
         $row_per_page = PAGINATION;
         $pageNo = isset($input['page']) && !empty($input['page']) ? $input['page'] : 1;
@@ -90,7 +134,7 @@ class ReportsControllers extends Controller {
     public function getBalances($totals){
         $balances = [];
         $allTotals = [0,0,0,0,0,0];
-        $storages = ShopStorage::NotDeleted()->whereIn('shop_id',$this->shops)->where('is_active',1)->get();
+        $storages = ShopStorage::NotDeleted()->select('*')->selectRaw(\DB::raw('sum(balance) as balance'))->whereIn('shop_id',$this->shops)->groupBy('currency_id','shop_id')->where('is_active',1)->get();
         foreach ($storages as $oneStorage) {
             if(!isset($balances[$oneStorage->shop_id])){
                 $balances[$oneStorage->shop_id] = [0,0,0,0,0,0];   
@@ -103,6 +147,27 @@ class ReportsControllers extends Controller {
             $allTotals[$oneStorage->currency_id-1] = $balances[$oneStorage->shop_id][$oneStorage->currency_id-1] + $allTotals[$oneStorage->currency_id-1];
         }
         return [$balances,$allTotals];
+    }
+
+    public function getAllBalances($totals){
+        $balances = [];
+        $storages = BankAccount::NotDeleted()->select('*')->selectRaw(\DB::raw('sum(balance) as balance'))->whereIn('shop_id',$this->shops)->groupBy('currency_id','shop_id')->where('is_active',1)->get();
+        foreach ($storages as $oneStorage) {
+            if(!isset($balances[$oneStorage->id])){
+                $balances[$oneStorage->id] = [0,0,0,0,0,0];   
+            }
+            $balances[$oneStorage->id][$oneStorage->currency_id-1] = $oneStorage->balance + $totals[$oneStorage->id][1][$oneStorage->currency_id-1] - $totals[$oneStorage->id][0][$oneStorage->currency_id-1];
+        }
+        return $balances;
+    }
+
+    public function getDeterminedBalances($totals,$expeses){        
+        foreach ($totals as $key=> $oneStorage) {
+            if(isset($expeses[$key])){
+                $totals[$key][0] = $totals[$key][0] - $expeses[$key][0][0];
+            }
+        }
+        return $totals;
     }
 
     public function storages(){
@@ -127,7 +192,7 @@ class ReportsControllers extends Controller {
             if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
                 $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
             }
-        })->where('to_id','!=',1)->selectRaw('shop_id,to_id as currency,sum(paid) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),shop_id'),'to_id')->get(['shop_id,currency','myTotal','created_at']);
+        })->where('to_id','!=',1)->selectRaw('shop_id,to_id as currency,sum(paid) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),shop_id,to_id'))->get(['shop_id,currency','myTotal','created_at']);
         $outComingData = reset($outComingData);
 
         $inComingData = Exchange::NotDeleted()->whereIn('shop_id',$this->shops)->where(function($whereQuery) use ($input){
@@ -163,7 +228,11 @@ class ReportsControllers extends Controller {
     }
 
     public function bankAccounts(){
-       
+        $dataList = BankAccount::reportList();
+        $dataList['bankAccounts'] = BankAccount::dataList('no_paginate')['data'];
+        $dataList['shops'] = Shop::whereIn('id',$this->shops)->orderBy('id','ASC')->get();
+        return view('Reports.Views.bankAccounts')
+            ->with('data', (Object) $dataList);
     }
 
     public function delegates(){
@@ -171,10 +240,166 @@ class ReportsControllers extends Controller {
     }
 
     public function daily(){
-        
+        $data = [];
+        $totals = [];
+        $input = \Input::all();
+
+        $outComingData = Exchange::NotDeleted()->whereIn('shop_id',$this->shops)->where(function($whereQuery) use ($input){
+            if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
+                $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
+            }
+        })->selectRaw('shop_id,to_id as currency,sum(paid) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),shop_id,to_id'))->get(['shop_id,currency','myTotal','created_at']);
+        $outComingData = reset($outComingData);
+
+        $inComingData = Exchange::NotDeleted()->whereIn('shop_id',$this->shops)->where(function($whereQuery) use ($input){
+            if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
+                $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
+            }
+        })->selectRaw('shop_id,from_id as currency,sum(amount) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),shop_id,from_id'))->get(['shop_id','currency','myTotal','created_at']);
+        $inComingData = reset($inComingData);
+
+        $currencyArray = Currency::NotDeleted()->orderBy('id','ASC')->pluck('name');
+        $currencyArray = reset($currencyArray);
+
+        // $expenseData = $this->prepareStorageData($data,$totals,$expenses,0);
+        $outcomingAllData = $this->prepareStorageDataForDay(0,$data,$totals,$outComingData,0);
+        $incomingAllData = $this->prepareStorageDataForDay(0,$outcomingAllData[0],$outcomingAllData[1],$inComingData,1);
+
+
+        $bankAccounts = BankAccount::reportList($this->shops,null,'no_paginate')['data'];
+        $banksData = [];
+        $bankAccountAllData = [];
+        foreach ($bankAccounts as $oneBank) {
+            foreach($oneBank->transfers as $one){
+                $myType = 0;
+                for ($i = 0; $i < count($one) ; $i++) {
+                    if(!empty($one[$i])){
+                        $myBankData = new \stdClass();
+                        $myBankData->shop_id = $one[$i][4];
+                        $myBankData->bank_account_id = $oneBank->id;
+                        $myBankData->currency = $one[$i][5];
+                        $myBankData->myTotal = $one[$i][0];
+                        $myBankData->created_at = $one[$i][3];
+                        $banksData[$oneBank->id] = $myBankData;
+                    }   
+                    if($i == 0){
+                        $bankAccountAllData = $this->prepareStorageDataForDay2(1,$incomingAllData[0],$incomingAllData[1],$banksData,$i);
+
+                    }else{
+                        $bankAccountAllData = $this->prepareStorageDataForDay2(1,$bankAccountAllData[0],$bankAccountAllData[1],$banksData,$i);
+                    }
+                }
+            }
+        }
+
+        // dd($bankAccountAllData[1]);
+        $expenses = Expense::NotDeleted()->whereIn('shop_id',$this->shops)->where(function($whereQuery) use ($input){
+            if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
+                $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
+            }
+        })->selectRaw('shop_id,sum(total) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),shop_id'))->get(['myTotal','created_at','shop_id']);
+        $expenses = reset($expenses);
+
+        $expenseAllData = $this->prepareStorageDataForDay(2,$bankAccountAllData[0],$bankAccountAllData[1],$expenses,0);
+        $allData = $expenseAllData[0];
+        krsort($allData);
+
+        $balancesFirst = $this->getBalances(@$expenseAllData[1][0]);
+        $balancesSecond = $this->getAllBalances(@$expenseAllData[1][1]);
+        $balancesFirst = $this->getDeterminedBalances(@$balancesFirst[0],@$expenseAllData[1][2]);
+
+        $dataList = $this->setPaginationForArray($allData);
+        $dataList['balancesFirst'] = $balancesFirst;
+        $dataList['balancesSecond'] = $balancesSecond;
+
+        $dataList['shops'] = Shop::whereIn('id',$this->shops)->orderBy('id','ASC')->get();
+        $dataList['shops_count'] = count($dataList);
+        $dataList['currencies'] = $currencyArray;
+        $dataList['bankAccounts'] = $bankAccounts;
+        $dataList['totals'] = $expenseAllData[1];
+        $dataList['data_count'] = count($allData);
+        return view('Reports.Views.daily')
+            ->with('data', (Object) $dataList);
     }
 
     public function yearly(){
-        
+        $data = [];
+        $totals = [];
+        $input = \Input::all();
+
+        $outComingData = Exchange::NotDeleted()->whereIn('shop_id',$this->shops)->where(function($whereQuery) use ($input){
+            if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
+                $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
+            }
+        })->selectRaw('shop_id,to_id as currency,sum(paid) as myTotal,DATE_FORMAT(created_at,"%m-%Y") as created_at')->groupBy(\DB::raw('DATE_FORMAT(created_at,"%m-%Y"),shop_id,to_id'))->get(['shop_id,currency','myTotal','created_at']);
+        $outComingData = reset($outComingData);
+
+        $inComingData = Exchange::NotDeleted()->whereIn('shop_id',$this->shops)->where(function($whereQuery) use ($input){
+            if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
+                $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
+            }
+        })->selectRaw('shop_id,from_id as currency,sum(amount) as myTotal,DATE_FORMAT(created_at,"%m-%Y") as created_at')->groupBy(\DB::raw('DATE_FORMAT(created_at,"%m-%Y"),shop_id,from_id'))->get(['shop_id','currency','myTotal','created_at']);
+        $inComingData = reset($inComingData);
+
+        $currencyArray = Currency::NotDeleted()->orderBy('id','ASC')->pluck('name');
+        $currencyArray = reset($currencyArray);
+
+        $outcomingAllData = $this->prepareStorageDataForDay(0,$data,$totals,$outComingData,0);
+        $incomingAllData = $this->prepareStorageDataForDay(0,$outcomingAllData[0],$outcomingAllData[1],$inComingData,1);
+
+
+        $bankAccounts = BankAccount::reportList($this->shops,'M','no_paginate')['data'];
+        $banksData = [];
+        $bankAccountAllData = [];
+        foreach ($bankAccounts as $oneBank) {
+            foreach($oneBank->transfers as $one){
+                $myType = 0;
+                for ($i = 0; $i < count($one) ; $i++) {
+                    if(!empty($one[$i])){
+                        $myBankData = new \stdClass();
+                        $myBankData->shop_id = $one[$i][4];
+                        $myBankData->bank_account_id = $oneBank->id;
+                        $myBankData->currency = $one[$i][5];
+                        $myBankData->myTotal = $one[$i][0];
+                        $myBankData->created_at = $one[$i][3];
+                        $banksData[$oneBank->id] = $myBankData;
+                    }   
+                    if($i == 0){
+                        $bankAccountAllData = $this->prepareStorageDataForDay2(1,$incomingAllData[0],$incomingAllData[1],$banksData,$i);
+
+                    }else{
+                        $bankAccountAllData = $this->prepareStorageDataForDay2(1,$bankAccountAllData[0],$bankAccountAllData[1],$banksData,$i);
+                    }
+                }
+            }
+        }
+
+        $expenses = Expense::NotDeleted()->whereIn('shop_id',$this->shops)->where(function($whereQuery) use ($input){
+            if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
+                $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
+            }
+        })->selectRaw('shop_id,sum(total) as myTotal,DATE_FORMAT(created_at,"%m-%Y") as created_at')->groupBy(\DB::raw('DATE_FORMAT(created_at,"%m-%Y"),shop_id'))->get(['myTotal','created_at','shop_id']);
+        $expenses = reset($expenses);
+
+        $expenseAllData = $this->prepareStorageDataForDay(2,$bankAccountAllData[0],$bankAccountAllData[1],$expenses,0);
+        $allData = $expenseAllData[0];
+        krsort($allData);
+
+        $balancesFirst = $this->getBalances(@$expenseAllData[1][0]);
+        $balancesSecond = $this->getAllBalances(@$expenseAllData[1][1]);
+        $balancesFirst = $this->getDeterminedBalances(@$balancesFirst[0],@$expenseAllData[1][2]);
+
+        $dataList = $this->setPaginationForArray($allData);
+        $dataList['balancesFirst'] = $balancesFirst;
+        $dataList['balancesSecond'] = $balancesSecond;
+
+        $dataList['shops'] = Shop::whereIn('id',$this->shops)->orderBy('id','ASC')->get();
+        $dataList['shops_count'] = count($dataList);
+        $dataList['currencies'] = $currencyArray;
+        $dataList['bankAccounts'] = $bankAccounts;
+        $dataList['totals'] = $expenseAllData[1];
+        $dataList['data_count'] = count($allData);
+        return view('Reports.Views.yearly')
+            ->with('data', (Object) $dataList);
     }
 }

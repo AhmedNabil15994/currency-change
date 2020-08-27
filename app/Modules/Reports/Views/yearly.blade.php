@@ -1,5 +1,5 @@
 @extends('Layouts.master')
-@section('title', 'تقارير الصندوق')
+@section('title', 'التقارير السنوية')
 @section('otherhead')
 <style type="text/css" media="screen">
     .select2-container{
@@ -74,7 +74,7 @@
                 <div class="x_title">
                     <div class="row">
                         <div class="col-xs-6">
-                            <h3>تقارير الصندوق<small> العدد الكلي : {{ $data->data_count }}</small></h3>
+                            <h3>التقارير السنوية<small> العدد الكلي : {{ $data->data_count }}</small></h3>
                         </div>
                         <div class="col-xs-6 text-right">
                             <ul class="nav navbar-right " style="padding-top: 1%">
@@ -91,10 +91,32 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>التاريخ</th>
+                                    <th width="10%;">التاريخ</th>
                                     @foreach($data->shops as $shop)
                                     <th class="text-center">
-                                        {{ $shop->title }} <br>
+                                        حساب الصندوق {{ $shop->title }} <br>
+                                        <div class="col-xs-6">
+                                            صادر
+                                        </div>
+                                        <div class="col-xs-6">
+                                            وارد
+                                        </div>
+                                    </th>
+                                    @endforeach  
+                                    @foreach($data->bankAccounts as $oneBank)
+                                    <th class="text-center">
+                                        حساب البنك {{ $oneBank->name }} {{ $oneBank->shop_name }} <br>
+                                        <div class="col-xs-6">
+                                            صادر
+                                        </div>
+                                        <div class="col-xs-6">
+                                            وارد
+                                        </div>
+                                    </th>
+                                    @endforeach  
+                                    @foreach($data->shops as $shop)
+                                    <th class="text-center">
+                                        المصروفات {{ $shop->title }} <br>
                                         <div class="col-xs-6">
                                             صادر
                                         </div>
@@ -110,10 +132,58 @@
                                 @foreach($data->data as $key => $value)
                                 <tr>
                                     <td>{{ $v++ }}</td>
-                                    <td><b>{{ $key }}</b></td>
+                                    <td><b>{{ date('F, Y',strtotime('01-'.$key)) }}</b></td>
                                     @foreach($data->shops as $oneShop)
-                                    @if(isset($value[$oneShop->id]))
-                                    @php $shopDetails = $value[$oneShop->id]; @endphp 
+                                    @if(isset($value[0][$oneShop->id]))
+                                    @php $shopDetails = $value[0][$oneShop->id]; @endphp 
+                                    <td class="text-center">
+                                        <div class="col-xs-6">
+                                            @for($i=0;$i<count($shopDetails[0]);$i++)
+                                            @if($shopDetails[0][$i] > 0)
+                                            <b>{{ $shopDetails[0][$i] }} {{ $data->currencies[$i] }} <br></b>
+                                            @endif
+                                            @endfor  
+                                        </div>   
+                                        <div class="col-xs-6">
+                                            @for($x=0;$x<count($shopDetails[1]);$x++)
+                                            @if($shopDetails[1][$x] > 0)
+                                            <b>{{ $shopDetails[1][$x] }} {{ $data->currencies[$x] }} <br></b>
+                                            @endif
+                                            @endfor  
+                                        </div>                                   
+                                    </td>
+                                    @else
+                                    <td></td>
+                                    @endif
+                                    @endforeach
+
+                                    @foreach($data->bankAccounts as $oneBank)
+                                    @if(isset($value[1][$oneBank->id]))
+                                    @php $shopDetails = $value[1][$oneBank->id]; @endphp 
+                                    <td class="text-center">
+                                        <div class="col-xs-6">
+                                            @for($i=0;$i<count($shopDetails[0]);$i++)
+                                            @if($shopDetails[0][$i] > 0)
+                                            <b>{{ $shopDetails[0][$i] }} {{ $data->currencies[$i] }} <br></b>
+                                            @endif
+                                            @endfor  
+                                        </div>   
+                                        <div class="col-xs-6">
+                                            @for($x=0;$x<count($shopDetails[1]);$x++)
+                                            @if($shopDetails[1][$x] > 0)
+                                            <b>{{ $shopDetails[1][$x] }} {{ $data->currencies[$x] }} <br></b>
+                                            @endif
+                                            @endfor  
+                                        </div>                                   
+                                    </td>
+                                    @else
+                                    <td></td>
+                                    @endif
+                                    @endforeach 
+
+                                    @foreach($data->shops as $oneShop)
+                                    @if(isset($value[2][$oneShop->id]))
+                                    @php $shopDetails = $value[2][$oneShop->id]; @endphp 
                                     <td class="text-center">
                                         <div class="col-xs-6">
                                             @for($i=0;$i<count($shopDetails[0]);$i++)
@@ -136,12 +206,13 @@
                                     @endforeach
                                 </tr>
                                 @endforeach
+
                                 <tr style="background-color:#f1f1f1;">
                                     <td>{{ $v++ }}</td>
                                     <td><b>الاجمالي</b></td>
                                     @foreach($data->shops as $oneShop)
-                                    @if(isset($data->totals[$oneShop->id]))
-                                    @php $shopDetails = $data->totals[$oneShop->id]; @endphp 
+                                    @if(isset($data->totals[0][$oneShop->id]))
+                                    @php $shopDetails = $data->totals[0][$oneShop->id]; @endphp 
                                     <td class="text-center">
                                         <div class="col-xs-6">
                                             @for($a=0;$a<count($shopDetails[0]);$a++)
@@ -162,13 +233,61 @@
                                     <td></td>
                                     @endif
                                     @endforeach
+
+                                    @foreach($data->bankAccounts as $oneBank)
+                                    @if(isset($data->totals[1][$oneBank->id]))
+                                    @php $shopDetails = $data->totals[1][$oneBank->id]; @endphp 
+                                    <td class="text-center">
+                                        <div class="col-xs-6">
+                                            @for($i=0;$i<count($shopDetails[0]);$i++)
+                                            @if($shopDetails[0][$i] > 0)
+                                            <b>{{ $shopDetails[0][$i] }} {{ $data->currencies[$i] }} <br></b>
+                                            @endif
+                                            @endfor  
+                                        </div>   
+                                        <div class="col-xs-6">
+                                            @for($x=0;$x<count($shopDetails[1]);$x++)
+                                            @if($shopDetails[1][$x] > 0)
+                                            <b>{{ $shopDetails[1][$x] }} {{ $data->currencies[$x] }} <br></b>
+                                            @endif
+                                            @endfor  
+                                        </div>                                   
+                                    </td>
+                                    @else
+                                    <td></td>
+                                    @endif
+                                    @endforeach 
+
+                                    @foreach($data->shops as $oneShop)
+                                    @if(isset($data->totals[2][$oneShop->id]))
+                                    @php $shopDetails = $data->totals[2][$oneShop->id]; @endphp 
+                                    <td class="text-center">
+                                        <div class="col-xs-6">
+                                            @for($i=0;$i<count($shopDetails[0]);$i++)
+                                            @if($shopDetails[0][$i] > 0)
+                                            <b>{{ $shopDetails[0][$i] }}<br> {{ $data->currencies[$i] }} <br></b>
+                                            @endif
+                                            @endfor  
+                                        </div>   
+                                        <div class="col-xs-6">
+                                            @for($x=0;$x<count($shopDetails[1]);$x++)
+                                            @if($shopDetails[1][$x] > 0)
+                                            <b>{{ $shopDetails[1][$x] }}<br> {{ $data->currencies[$x] }} <br></b>
+                                            @endif
+                                            @endfor  
+                                        </div>                                   
+                                    </td>
+                                    @else
+                                    <td></td>
+                                    @endif
+                                    @endforeach
                                 </tr>
                                 <tr style="background-color:#f1f1f1;">
                                     <td>{{ $v++ }}</td>
                                     <td><b>الرصيد</b></td>
                                     @foreach($data->shops as $oneShop)
-                                    @if(isset($data->balances[$oneShop->id]))
-                                    @php $shopDetails = $data->balances[$oneShop->id]; @endphp 
+                                    @if(isset($data->balancesFirst[$oneShop->id]))
+                                    @php $shopDetails = $data->balancesFirst[$oneShop->id]; @endphp 
                                     <td class="text-center">
                                         @for($c=0;$c<count($shopDetails);$c++)
                                         @if($shopDetails[$c] != 0)
@@ -180,20 +299,25 @@
                                     <td></td>
                                     @endif
                                     @endforeach
-                                </tr>
-                                <tr style="background-color:#f1f1f1;">
-                                    <td>{{ $v++ }}</td>
-                                    <td colspan="{{ $data->shops_count / 3 }}"><b>الرصيد النهائي للفروع</b></td>
-                                    <td class="text-center" colspan="{{ 1 + $data->shops_count  }}"> 
-                                        @for($d=0;$d<count($shopDetails);$d++)
-                                        @if($shopDetails[$d] != 0)
-                                        <b>{{ $shopDetails[$d] }} {{ $data->currencies[$d] }} <br></b>
+
+                                    @foreach($data->bankAccounts as $oneBank)
+                                    @if(isset($data->balancesSecond[$oneBank->id]))
+                                    @php $shopDetails = $data->balancesSecond[$oneBank->id]; @endphp 
+                                    <td class="text-center">
+                                        @for($c=0;$c<count($shopDetails);$c++)
+                                        @if($shopDetails[$c] != 0)
+                                        <b>{{ $shopDetails[$c] }} {{ $data->currencies[$c] }} <br></b>
                                         @endif
                                         @endfor                                        
                                     </td>
-                                    @foreach($data->shops as $shop)
-                                    <td style="display: none;"></td>
-                                    @endforeach 
+                                    @else
+                                    <td></td>
+                                    @endif
+                                    @endforeach
+
+                                    @foreach($data->shops as $oneShop)
+                                    <td></td>
+                                    @endforeach
                                 </tr>
                             </tbody>
                         </table>
