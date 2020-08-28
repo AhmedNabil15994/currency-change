@@ -4,7 +4,7 @@ class ConvertCurrency {
     
     static function convert($base,$to) {  
         $key = Variable::getVar('CONVERT_KEY');
-        $url = "https://openexchangerates.org/api/latest.json?base=".$base."&app_id=".$key."&symbols=".$to;            
+        $url = 'https://openexchangerates.org/api/latest.json?base='.$base.'&app_id='.$key.'&symbols='.$to;            
         $header = array("content-type: application/json");    
 
         $ch = curl_init();
@@ -20,7 +20,7 @@ class ConvertCurrency {
         // close handle to release resources
         curl_close($ch);
         $result = json_decode($result);
-        return round($result->rates->$to ,4);
+        return isset($result->rates) ? round($result->rates->$to ,4): 1;
     }
 
     static function convertHistorical($base,$to,$date) {  
@@ -61,7 +61,7 @@ class ConvertCurrency {
             curl_close($ch);
             $result = json_decode($result);
         }
-        return round($result->rates->$to ,4);
+        return isset($result->rates) ? round($result->rates->$to ,4) : 1;
     }
 
     
