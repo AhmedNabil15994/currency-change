@@ -10,4 +10,5 @@ Route::group(['prefix' => '/transfers'] , function () {
     Route::get('add', 'TransfersControllers@add');
     Route::post('create', 'TransfersControllers@create');
     Route::get('delete/{id}', 'TransfersControllers@delete');
+    Route::get('getBanksAccounts/{id}', 'TransfersControllers@getBanksAccounts');
 });

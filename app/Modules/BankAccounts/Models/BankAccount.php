@@ -23,7 +23,7 @@ class BankAccount extends Model{
         return $this->belongsTo('App\Models\Currency','currency_id');
     }
 
-    static function dataList($withPaginate=null) {
+    static function dataList($withPaginate=null,$currency_id=null) {
         $input = \Input::all();
 
         $source = self::NotDeleted();
@@ -38,6 +38,12 @@ class BankAccount extends Model{
         }
         if (isset($input['currency_id']) && $input['currency_id'] != 0) {
             $source->where('currency_id', $input['currency_id']);
+        }
+        if ($currency_id != null) {
+            $source->where('currency_id', $currency_id);
+        }
+        if(!IS_ADMIN){
+            $source->where('shop_id',\Session::get('shop_id'));
         }
 
         $source->orderBy('id','DESC');
@@ -165,9 +171,9 @@ class BankAccount extends Model{
         }
         $toObj = Currency::getOne($to_id);
         if($date == null){
-            $transfersData = $source->Transfer()->select('*')->selectRaw('sum(balance) as myTotal')->groupBy(\DB::raw('Date(created_at),bank_account_id,currency_id,type'))->orderBy('id','DESC')->get();
+            $transfersData = $source->Transfer()->NotDeleted()->select('*')->selectRaw('sum(balance) as myTotal')->groupBy(\DB::raw('Date(created_at),bank_account_id,currency_id,type'))->orderBy('id','DESC')->get();
         }else{
-            $transfersData = $source->Transfer()->select('*')->selectRaw('sum(balance) as myTotal')->groupBy(\DB::raw('DATE_FORMAT(created_at,"%m-%Y"),bank_account_id,currency_id,type'))->orderBy('id','DESC')->get();
+            $transfersData = $source->Transfer()->NotDeleted()->select('*')->selectRaw('sum(balance) as myTotal')->groupBy(\DB::raw('DATE_FORMAT(created_at,"%m-%Y"),bank_account_id,currency_id,type'))->orderBy('id','DESC')->get();
         }
         foreach ($transfersData as $value) {
             $created_at = date('Y-m-d',strtotime($value->created_at));

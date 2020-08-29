@@ -19,6 +19,10 @@ class Transfer extends Model{
         return $this->belongsTo('App\Models\Currency','currency_id');
     }
 
+    function NewCurrency(){
+        return $this->belongsTo('App\Models\Currency','new_currency_id');
+    }
+
     function BankAccount(){
         return $this->belongsTo('App\Models\BankAccount','bank_account_id');
     }
@@ -90,6 +94,12 @@ class Transfer extends Model{
         $data->bank_account_id = $source->bank_account_id;
         $data->bank_account = $source->BankAccount->account_number;
         $data->company = $source->company;
+        $data->company_account = $source->company_account;
+        $data->details_id = $source->details_id;
+        $data->rate = $source->rate;
+        $data->total = $source->total;
+        $data->new_currency_id = $source->new_currency_id;
+        $data->new_currency = $source->new_currency_id != null ? $source->NewCurrency->name : '';
         $data->type = $source->type;
         $data->balance = $source->balance;
         $data->type = $source->type;

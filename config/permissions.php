@@ -106,6 +106,7 @@ return [
     'StoragesControllers@delete' => 'delete-storage',
 
     'TransfersControllers@index' => 'list-transfers',
+    'TransfersControllers@getBanksAccounts' => 'list-transfers',
     'TransfersControllers@edit' => 'edit-transfer',
     'TransfersControllers@update' => 'edit-transfer',
     'TransfersControllers@add' => 'add-transfer',

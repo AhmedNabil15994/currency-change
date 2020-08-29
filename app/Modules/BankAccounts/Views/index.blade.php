@@ -91,7 +91,7 @@
                             <th class="text-right">الفرع</th>
                             <th class="text-right">اسم البنك</th>
                             <th class="text-right">رقم الحساب</th>
-                            <th class="text-right">الرصيد</th>
+                            <th class="text-right">الرصيد المدخل</th>
                             <th class="text-right">العملة</th>
                             <th>الحالة</th>
                             <th>العمليات</th>

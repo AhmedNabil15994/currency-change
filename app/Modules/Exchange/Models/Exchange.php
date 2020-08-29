@@ -88,6 +88,9 @@ class Exchange extends Model{
         }else{
             $myType = 'مندوب';
             $user_name = Delegate::find($source->user_id)->name;
+            if($source->user_id == 0){
+                $user_name = 'حوالة بنكية';
+            }
         }
 
         $data->id = $source->id;
