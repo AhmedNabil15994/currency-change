@@ -55,7 +55,7 @@ class Exchange extends Model{
             $source->where('shop_id', \Session::get('shop_id'));
         }
 
-        $source->orderBy('id','DESC');
+        $source->where('user_id','!=',0)->orderBy('id','DESC');
         return self::generateObj($source,$withPaginate);
     }
 
