@@ -108,6 +108,7 @@
                             <th class="text-right">المندوب</th>
                             <th class="text-right">الحساب البنكي</th>
                             <th class="text-right">الشركة</th>
+                            <th class="text-right">حساب الشركة</th>
                             <th class="text-right">الرصيد</th>
                             <th class="text-right">العملة</th>
                             <th>الحالة</th>
@@ -122,6 +123,7 @@
                                 <td>{{ $value->delegate_name }}</td>
                                 <td>{{ $value->bank_account }}</td>
                                 <td>{{ $value->company }}</td>
+                                <td>{{ $value->company_account }}</td>
                                 <td>{{ $value->balance }}</td>
                                 <td>{{ $value->currency_name }}</td>
                                 <td width="3%" align="left"><span class="btn {{ $value->is_active == 1 ? "btn-success" : "btn-danger" }} btn-xs"> {{ $value->active }}</span></td>
@@ -139,7 +141,8 @@
                         @if($data->pagination->total_count == 0)
                             <tr>
                                 <td></td>
-                                <td colspan="8">لا يوجد حوالات بنكية</td>
+                                <td colspan="9">لا يوجد حوالات بنكية</td>
+                                <td style="display: none;"></td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>
