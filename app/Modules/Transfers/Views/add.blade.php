@@ -2,7 +2,7 @@
 @section('title', 'حوالة بنكية جديدة')
 @section('otherhead')
 <style type="text/css" media="screen">
-    @if(old('type') != 2)
+    @if( old('type') && old('type') == 1)
     .first{
         display: none;
     }
@@ -34,12 +34,12 @@
                             <div class="row" >
                                 <div class="col-xs-12">
                                     <div class="row" >
-                                        <div class="col-xs-12 col-md-2">
+                                        <div class="col-xs-12 col-md-3">
                                             <div class="form-group">
                                                 <label>النوع</label>
                                                 <select name="type" class="form-control" required>
-                                                    <option value="1" {{ old('type') == 1 ? 'selected' : '' }}>وارد</option>
                                                     <option value="2" {{ old('type') == 2 ? 'selected' : '' }}>صادر</option>
+                                                    <option value="1" {{ old('type') == 1 ? 'selected' : '' }}>وارد</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -66,22 +66,14 @@
                                                 <input type="text" class="form-control" placeholder="حساب الشركة" name="company_account" value="{{ old('company_account') }}">
                                             </div>
                                         </div>
-                                        <div class="col-xs-12 col-md-1">
-                                            <div class="form-group">
-                                                <label>مفعل</label>
-                                                <div class="checkbox">
-                                                    <input type="checkbox" class="flat" name="active" {{ old('active') ? 'checked' : '' }}>
-                                                </div>
-                                            </div>
-                                        </div>
                                         <div class="clearfix"></div>
-                                        <div class="col-xs-12 col-md-2">
+                                        <div class="col-xs-12 col-md-1">
                                             <div class="form-group">
                                                 <label>مبلغ الحوالة</label>
                                                 <input type="number" min="0" class="form-control" placeholder="مبلغ الحوالة" name="balance" value="{{ old('balance') }}">
                                             </div>
                                         </div>
-                                        <div class="col-xs-6 col-md-2">
+                                        <div class="col-xs-6 col-md-1">
                                             <div class="form-group">
                                                 <label>العملة</label>
                                                 <select class="form-control select2" name="currency_id">
@@ -109,7 +101,7 @@
                                                 <select class="form-control" name="details_id"> 
                                                     <option value="">اختر عملية التحويل</option>
                                                     @foreach($data->currencies2 as $currency)
-                                                    <option value="{{ $currency->id }}" data-area="{{ $currency->convert }}" data-area2="{{ $currency->to->name }}" {{ old('details_id') == $currency->id ? 'selected' : '' }}>{{ $currency->from->name }} الي {{ $currency->to->name }}</option>
+                                                    <option value="{{ $currency->id }}" data-area="{{ $currency->rate }}" data-area2="{{ $currency->to->name }}" {{ old('details_id') == $currency->id ? 'selected' : '' }}>{{ $currency->from->name }} الي {{ $currency->to->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -118,6 +110,12 @@
                                             <div class="form-group">
                                                 <label>سعر التحويل</label>
                                                 <input type="text" name="price" readonly class="form-control" placeholder="سعر التحويل" value="{{ old('price') }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-md-2 first">
+                                            <div class="form-group">
+                                                <label>العمولة (%)</label>
+                                                <input type="text" name="commission_rate" class="form-control" placeholder="العمولة (%)" value="{{ old('commission_rate') }}">
                                             </div>
                                         </div>
                                         <div class="col-xs-12 col-md-2 first">

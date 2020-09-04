@@ -145,9 +145,9 @@ class ExchangeControllers extends Controller {
         $exchangeObj->user_id = $user_id;
         $exchangeObj->from_id = $detailsObj->from_id;
         $exchangeObj->to_id = $detailsObj->to_id;
-        $exchangeObj->convert_price = $detailsObj->convert;
+        $exchangeObj->convert_price = $detailsObj->rate;
         $exchangeObj->amount = $input['amount'];
-        $exchangeObj->paid = round($input['amount'] * $detailsObj->convert ,2);
+        $exchangeObj->paid = round($input['amount'] * $detailsObj->rate ,2);
         $exchangeObj->updated_at = DATE_TIME;
         $exchangeObj->updated_by = USER_ID;
         $exchangeObj->save();
@@ -239,9 +239,9 @@ class ExchangeControllers extends Controller {
         $exchangeObj->user_id = $user_id;
         $exchangeObj->from_id = $detailsObj->from_id;
         $exchangeObj->to_id = $detailsObj->to_id;
-        $exchangeObj->convert_price = $detailsObj->convert;
+        $exchangeObj->convert_price = $detailsObj->rate;
         $exchangeObj->amount = $input['amount'];
-        $exchangeObj->paid = round($input['amount'] * $detailsObj->convert ,2);
+        $exchangeObj->paid = round($input['amount'] * $detailsObj->rate ,2);
         $exchangeObj->created_at = DATE_TIME;
         $exchangeObj->created_by = USER_ID;
         $exchangeObj->save();

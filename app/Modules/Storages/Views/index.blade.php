@@ -83,7 +83,7 @@
                         <tr>
                             <th>ID</th>
                             <th class="text-right">الفرع</th>
-                            <th class="text-right">الرصيد</th>
+                            <th class="text-right">الرصيد الافتتاحي</th>
                             <th class="text-right">العملة</th>
                             <th>الحالة</th>
                             <th>العمليات</th>

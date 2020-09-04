@@ -88,4 +88,9 @@ class ShopStorage extends Model{
             ->first();
     }
 
+    static function getOneById($id) {
+        return self::NotDeleted()
+            ->where('id', $id)
+            ->first();
+    }
 }

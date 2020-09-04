@@ -82,14 +82,17 @@
                     </li>
                     @endif
 
-                    @if(\Helper::checkRules('list-bank-account,list-storages'))
-                    <li class="{{ Active(URL::to('/bank-accounts*')) }} {{ Active(URL::to('/storages*')) }}"><a><i class="fas fa-dollar-sign"></i> الحسابات البنكية والصناديق <span class="fas fa-chevron-down"></span></a>
+                    @if(\Helper::checkRules('list-bank-account,list-storages,list-storage-transfers'))
+                    <li class="{{ Active(URL::to('/bank-accounts*')) }} {{ Active(URL::to('/storages*')) }} {{ Active(URL::to('/storage-transfers*')) }}"><a><i class="fas fa-dollar-sign"></i> الحسابات البنكية والصناديق <span class="fas fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
                             @if(\Helper::checkRules('list-bank-accounts'))
                                 <li class="{{ Active(URL::to('/bank-accounts*')) }}"><a href="{{ URL::to('/bank-accounts') }}">الحسابات البنكية</a></li>
                             @endif
                             @if(\Helper::checkRules('list-storages'))
                                 <li class="{{ Active(URL::to('/storages*')) }}"><a href="{{ URL::to('/storages') }}">الصناديق</a></li>
+                            @endif
+                            @if(\Helper::checkRules('storage-transfers'))
+                                <li class="{{ Active(URL::to('/storage-transfers*')) }}"><a href="{{ URL::to('/storage-transfers') }}">التحويل من الصناديق</a></li>
                             @endif
                         </ul>
                     </li>

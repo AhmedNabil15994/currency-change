@@ -105,6 +105,14 @@ return [
     'StoragesControllers@create' => 'add-storage',
     'StoragesControllers@delete' => 'delete-storage',
 
+    'StorageTransfersControllers@index' => 'list-storage-transfers',
+    'StorageTransfersControllers@edit' => 'edit-storage-transfer',
+    'StorageTransfersControllers@update' => 'edit-storage-transfer',
+    'StorageTransfersControllers@add' => 'add-storage-transfer',
+    'StorageTransfersControllers@create' => 'add-storage-transfer',
+    'StorageTransfersControllers@delete' => 'delete-storage-transfer',
+    'StorageTransfersControllers@get_to' => 'list-storage-transfers',
+
     'TransfersControllers@index' => 'list-transfers',
     'TransfersControllers@getBanksAccounts' => 'list-transfers',
     'TransfersControllers@edit' => 'edit-transfer',

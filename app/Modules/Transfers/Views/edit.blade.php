@@ -34,7 +34,7 @@
                         <div class="row" >
                                 <div class="col-xs-12">
                                     <div class="row" >
-                                        <div class="col-xs-12 col-md-2">
+                                        <div class="col-xs-12 col-md-3">
                                             <div class="form-group">
                                                 <label>النوع</label>
                                                 <select name="type" class="form-control" required>
@@ -66,22 +66,14 @@
                                                 <input type="text" class="form-control" placeholder="حساب الشركة" name="company_account" value="{{ $data->data->company_account }}">
                                             </div>
                                         </div>
-                                        <div class="col-xs-12 col-md-1">
-                                            <div class="form-group">
-                                                <label>مفعل</label>
-                                                <div class="checkbox">
-                                                    <input type="checkbox" class="flat" name="active" {{ $data->data->active ? 'checked' : '' }}>
-                                                </div>
-                                            </div>
-                                        </div>
                                         <div class="clearfix"></div>
-                                        <div class="col-xs-12 col-md-2">
+                                        <div class="col-xs-12 col-md-1">
                                             <div class="form-group">
                                                 <label>مبلغ الحوالة</label>
                                                 <input type="number" min="0" class="form-control" placeholder="مبلغ الحوالة" name="balance" value="{{ $data->data->balance }}">
                                             </div>
                                         </div>
-                                        <div class="col-xs-6 col-md-2">
+                                        <div class="col-xs-6 col-md-1">
                                             <div class="form-group">
                                                 <label>العملة</label>
                                                 <select class="form-control select2" name="currency_id">
@@ -109,7 +101,7 @@
                                                 <select class="form-control" name="details_id"> 
                                                     <option value="">اختر عملية التحويل</option>
                                                     @foreach($data->currencies2 as $currency)
-                                                    <option value="{{ $currency->id }}" data-area="{{ $currency->convert }}" data-area2="{{ $currency->to->name }}" {{ $data->data->details_id == $currency->id ? 'selected' : '' }}>{{ $currency->from->name }} الي {{ $currency->to->name }}</option>
+                                                    <option value="{{ $currency->id }}" data-area="{{ $currency->rate }}" data-area2="{{ $currency->to->name }}" {{ $data->data->details_id == $currency->id ? 'selected' : '' }}>{{ $currency->from->name }} الي {{ $currency->to->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -118,6 +110,12 @@
                                             <div class="form-group">
                                                 <label>سعر التحويل</label>
                                                 <input type="text" name="price" readonly class="form-control" placeholder="سعر التحويل" value="{{ $data->data->rate }} {{ $data->data->new_currency }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-md-2 first">
+                                            <div class="form-group">
+                                                <label>العمولة (%)</label>
+                                                <input type="text" name="commission_rate" class="form-control" placeholder="العمولة (%)" value="{{ $data->data->commission_rate }}">
                                             </div>
                                         </div>
                                         <div class="col-xs-12 col-md-2 first">

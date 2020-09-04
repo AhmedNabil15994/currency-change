@@ -90,9 +90,6 @@
                             <th>ID</th>
                             <th class="text-right">العملة (من)</th>
                             <th class="text-right">العملة (الي)</th>
-                            <th class="text-right">قيمة التحويل اليومية (العالمية)</th>
-                            <th class="text-right">نوع العمولة</th>
-                            <th class="text-right">قيمة العمولة</th>
                             <th class="text-right">قيمة التحويل اليومية (النظام)</th>
                             <th>الحالة</th>
                             <th>العمليات</th>
@@ -104,10 +101,7 @@
                                 <td width="3%">{{ $value->id }}</td>
                                 <td>{{ $value->from->name }}</td>
                                 <td>{{ $value->to->name }}</td>
-                                <td>1 {{ $value->from->name }} == {{ $value->daily_value }} {{ $value->to->name }}</td>
-                                <td>{{ $value->type_name }}</td>
-                                <td>{{ $value->rate . ($value->type == 1 ? ' %':'') }}</td>
-                                <td>{{ $value->convert }}</td>
+                                <td>1 {{ $value->from->name }} == {{ $value->rate }} {{ $value->to->name }}</td>
                                 <td width="3%" align="left"><span class="btn {{ $value->is_active == 1 ? "btn-success" : "btn-danger" }} btn-xs"> {{ $value->active }}</span></td>
                                 <td class="actions" width="15%" align="left">
                                     @if(\Helper::checkRules('edit-details'))
@@ -123,10 +117,7 @@
                         @if($data->pagination->total_count == 0)
                             <tr>
                                 <td></td>
-                                <td colspan="7">لا يوجد عملاء</td>
-                                <td style="display: none;"></td>
-                                <td style="display: none;"></td>
-                                <td style="display: none;"></td>
+                                <td colspan="4">لا يوجد عملاء</td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>

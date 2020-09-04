@@ -48,11 +48,12 @@ function getCalcs(){
     $('input[name="price"]').val(0);
     $('input[name="paid"]').val(0);
     var amount = $('input[name="balance"]').val();
+    var commission_rate = $('input[name="commission_rate"]').val();
     var convert = $('select[name="details_id"] option:selected').attr('data-area');
     var convertLabel = $('select[name="details_id"] option:selected').attr('data-area2');
-    if(convert > 0 && amount > 0 ){
+    if(convert > 0 && amount > 0){
         $('input[name="price"]').val(convert+' '+convertLabel);
-        $('input[name="paid"]').val((convert * amount).toFixed(2) + ' '+convertLabel);
+        $('input[name="paid"]').val(((convert * amount) + (commission_rate / 100 * convert * amount ) ).toFixed(2) + ' '+convertLabel);
     }
 }
 
@@ -61,5 +62,9 @@ $('select[name="details_id"]').on('change',function(){
 });
 
 $('input[name="balance"]').on('blur',function(){
+    getCalcs();
+});
+
+$('input[name="commission_rate"]').on('blur',function(){
     getCalcs();
 });

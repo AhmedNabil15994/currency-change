@@ -16,14 +16,12 @@ class DetailsControllers extends Controller {
         $rules = [
             'from_id' => 'required',
             'to_id' => 'required',
-            'type' => 'required',
             'rate' => 'required',
         ];
 
         $message = [
             'from_id.required' => "يرجي اختيار العملة (من)",
             'to_id.required' => "يرجي اختيار العملة (الي)",
-            'type.required' => "يرجي اختيار نوع العمولة",
             'rate.required' => "يرجي ادخال قيمة العمولة",
         ];
 
@@ -92,7 +90,7 @@ class DetailsControllers extends Controller {
 
         $userObj->from_id = $input['from_id'];
         $userObj->to_id = $input['to_id'];
-        $userObj->type = $input['type'];
+        $userObj->type = 2;
         $userObj->rate = floatval($input['rate']);
         $userObj->is_active = isset($input['active']) ? 1 : 0;
         $userObj->updated_at = DATE_TIME;
@@ -142,7 +140,7 @@ class DetailsControllers extends Controller {
         $detailsObj = new Details;
         $detailsObj->from_id = $input['from_id'];
         $detailsObj->to_id = $input['to_id'];
-        $detailsObj->type = $input['type'];
+        $detailsObj->type = 2;
         $detailsObj->rate = floatval($input['rate']);
         $detailsObj->is_active = isset($input['active']) ? 1 : 0;
         $detailsObj->created_at = DATE_TIME;

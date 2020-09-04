@@ -1,5 +1,5 @@
 @extends('Layouts.master')
-@section('title', 'الحسابات البنكية')
+@section('title', 'التحويلات من الصناديق')
 
 @section('content')
 
@@ -12,8 +12,8 @@
                         <ul class="nav navbar-right panel_toolbox">
                             <div align="right">
                                 <button type="submit" class="btn btn-primary" style="width:110px;"><i class="fa fa-search"></i> بحث ..</button>
-                                @if(Input::has('name') || Input::has('account_number') || Input::has('currency_id') || Input::has('shop_id'))
-                                    <a href="{{ URL::to('/bank-accounts') }}" type="submit" class="btn btn-danger" style="color: black;"><i class="fa fa-redo"></i></a>
+                                @if(Input::has('storage_id') || Input::has('type') || Input::has('currency_id') || Input::has('to_id'))
+                                    <a href="{{ URL::to('/storage-transfers') }}" type="submit" class="btn btn-danger" style="color: black;"><i class="fa fa-redo"></i></a>
                                 @endif
                                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                             </div>
@@ -24,25 +24,33 @@
                         <div class="row">
                             <div class="col-xs-6 col-md-3">
                                 <div class="form-group">
-                                    <label>الفرع</label>
-                                    <select class="form-control select2" name="shop_id">
-                                        <option value="0">اختر الفرع</option>
-                                        @foreach($data->shops as $shop)
-                                            <option value="{{ $shop->id }}" {{ Input::get('shop_id') == $shop->id ? 'selected' : '' }}>{{ $shop->title }}</option>
+                                    <label>الصندوق المحول منه</label>
+                                    <select class="form-control select2" name="storage_id">
+                                        <option value="0">اختر الصندوق</option>
+                                        @foreach($data->storages as $storage)
+                                            <option value="{{ $storage->id }}" {{ Input::get('storage_id') == $storage->id ? 'selected' : '' }}>صندوق {{ $storage->shop_name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
                             <div class="col-xs-6 col-md-3">
                                 <div class="form-group">
-                                    <label>اسم البنك</label>
-                                    <input type="text" class="form-control" name="name" placeholder="اسم البنك" value="{{ Input::get('name') }}">
+                                    <label>نوع التحويل</label>
+                                    <select class="form-control select2" name="type">
+                                        <option value="1">التحويل الي صندوق</option>
+                                        <option value="2">التحويل الي حساب بنكي</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-xs-6 col-md-3">
                                 <div class="form-group">
-                                    <label>رقم الحساب</label>
-                                    <input type="text" class="form-control" name="account_number" placeholder="رقم الحساب" value="{{ Input::get('account_number') }}">
+                                    <label>المحول اليه</label>
+                                    <select class="form-control select2" name="to_id">
+                                        <option value="">اختر الصندوق</option>
+                                        @foreach($data->storages as $storage)
+                                            <option value="{{ $storage->id }}" {{ Input::get('to_id') == $storage->id ? 'selected' : '' }}>صندوق {{ $storage->shop_name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-xs-6 col-md-3">
@@ -69,12 +77,12 @@
                 <div class="x_title">
                     <div class="row">
                         <div class="col-xs-6">
-                            <h3>الحسابات البنكية<small> العدد الكلي : {{ $data->pagination->total_count }}</small></h3>
+                            <h3>التحويلات من الصناديق<small> العدد الكلي : {{ $data->pagination->total_count }}</small></h3>
                         </div>
                         <div class="col-xs-6 text-right">
                             <ul class="nav navbar-right " style="padding-top: 1%">
-                                @if(\Helper::checkRules('add-bank-account'))
-                                    <a href="{{URL::to('/bank-accounts/add')}}" class="btn btn-default" style="color: black;"><i class="fa fa fa-plus"></i> حساب بنكي جديد</a>
+                                @if(\Helper::checkRules('add-storage-transfer'))
+                                    <a href="{{URL::to('/storage-transfers/add')}}" class="btn btn-default" style="color: black;"><i class="fa fa fa-plus"></i> تحويل جديد</a>
                                 @endif
                                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                             </ul>
@@ -88,12 +96,11 @@
                         <thead>
                         <tr>
                             <th>ID</th>
-                            <th class="text-right">الفرع</th>
-                            <th class="text-right">اسم البنك</th>
-                            <th class="text-right">رقم الحساب</th>
-                            <th class="text-right">الرصيد الافتتاحي</th>
+                            <th class="text-right">الصندوق</th>
+                            <th class="text-right">نوع التحويل</th>
+                            <th class="text-right">المحول اليه</th>
+                            <th class="text-right">الرصيد المحول</th>
                             <th class="text-right">العملة</th>
-                            <th>الحالة</th>
                             <th>العمليات</th>
                         </tr>
                         </thead>
@@ -101,19 +108,18 @@
                         @foreach($data->data as $value)
                             <tr id="tableRaw{{ $value->id }}">
                                 <td width="3%">{{ $value->id }}</td>
-                                <td>{{ $value->shop_name }}</td>
-                                <td>{{ $value->name }}</td>
-                                <td>{{ $value->account_number }}</td>
-                                <td>{{ $value->balance }}</td>
+                                <td>{{ $value->storage_name }}</td>
+                                <td>{{ $value->type_text }}</td>
+                                <td>{{ $value->to_text }}</td>
+                                <td>{{ $value->total }}</td>
                                 <td>{{ $value->currency_name }}</td>
-                                <td width="3%" align="left"><span class="btn {{ $value->is_active == 1 ? "btn-success" : "btn-danger" }} btn-xs"> {{ $value->active }}</span></td>
                                 <td class="actions" width="15%" align="left">
-                                    @if(\Helper::checkRules('edit-bank-account'))
-                                        <a href="{{ URL::to('/bank-accounts/edit/' . $value->id) }}" class="btn btn-info btn-xs"><i class="fa fa-pencil-alt"></i> تعديل </a>
+                                    @if(\Helper::checkRules('edit-storage-transfer'))
+                                        <a href="{{ URL::to('/storage-transfers/edit/' . $value->id) }}" class="btn btn-info btn-xs"><i class="fa fa-pencil-alt"></i> تعديل </a>
                                     @endif
 
-                                    @if(\Helper::checkRules('delete-bank-account'))
-                                        <a onclick="deleteBankAccount('{{ $value->id }}')" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> حذف </a>
+                                    @if(\Helper::checkRules('delete-storage-transfer'))
+                                        <a onclick="deleteStorageTransfer('{{ $value->id }}')" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> حذف </a>
                                     @endif
                                 </td>
                             </tr>
@@ -121,8 +127,7 @@
                         @if($data->pagination->total_count == 0)
                             <tr>
                                 <td></td>
-                                <td colspan="7">لا يوجد حسابات بنكية</td>
-                                <td style="display: none;"></td>
+                                <td colspan="6">لا يوجد حسابات بنكية</td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>
@@ -143,5 +148,5 @@
 @stop
 
 @section('script')
-    <script src="{{ asset('assets/components/bank-accounts.js')}}"></script>
+    <script src="{{ asset('assets/components/storage-transfers.js')}}"></script>
 @stop()

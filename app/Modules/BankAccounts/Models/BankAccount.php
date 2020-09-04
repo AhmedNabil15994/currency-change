@@ -193,6 +193,22 @@ class BankAccount extends Model{
                 $totalCome = $totalCome + $value->myTotal;
             }
         }
+
+        $shopStorages = StorageTransfer::NotDeleted()->where('type',2)->where('to_id',$source->id)->get();
+        foreach ($shopStorages as $values) {
+            $created_at = date('Y-m-d',strtotime($values->created_at));
+            $rate = \ConvertCurrency::convertHistorical($values->Currency->code,$toObj->code,$created_at);
+            if(!isset($transfers[$created_at])){
+                $transfers[$created_at] = [[],[]];
+            }
+            $myDate = date('Y-m-d',strtotime($values->created_at));
+            if($date != null){
+                $myDate = date('m-Y',strtotime($values->created_at));
+            }
+            $transfers[$created_at][1] = [$values->total,$rate,round($rate*$values->total , 4),$myDate,$source->shop_id,$source->currency_id];
+            $totalCome = $totalCome + $values->total;
+        }
+
         $data->id = $source->id;
         $data->shop_id = $source->shop_id;
         $data->shop_name = $source->Shop->title;

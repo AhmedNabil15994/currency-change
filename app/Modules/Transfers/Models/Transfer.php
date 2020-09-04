@@ -102,10 +102,10 @@ class Transfer extends Model{
         $data->new_currency = $source->new_currency_id != null ? $source->NewCurrency->name : '';
         $data->type = $source->type;
         $data->balance = $source->balance;
+        $data->commission_rate = $source->commission_rate;
+        $data->commission_value = $source->commission_value;
         $data->type = $source->type;
         $data->type_text = $source->type == 1 ? "وارد" : "صادر";
-        $data->active = $source->is_active == 1 ? "مفعل" : "غير مفعل";
-        $data->is_active = $source->is_active;
         $data->created_at = $source->created_at;
         return $data;
     }

@@ -50,17 +50,8 @@
                                     <div class="row" >
                                         <div class="col-xs-12 col-sm-6 col-md-4">
                                             <div class="form-group">
-                                                <label>نوع العمولة</label>
-                                                <select class="form-control" name="type"> 
-                                                    <option value="1" {{ old('type') == 1 ? 'selected' : '' }}>نسبة</option>
-                                                    <option value="2" {{ old('type') == 2 ? 'selected' : '' }}>مبلغ</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-12 col-sm-6 col-md-4">
-                                            <div class="form-group">
-                                                <label>القيمة</label>
-                                                <input type="text" class="form-control" name="rate" placeholder="القيمة" value="{{ old('rate') }}">
+                                                <label>سعر التغيير</label>
+                                                <input type="text" class="form-control" name="rate" placeholder="سعر التغيير" value="{{ old('rate') }}">
                                             </div>
                                         </div>
                                         <div class="col-xs-12 col-sm-6 col-md-4">

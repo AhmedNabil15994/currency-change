@@ -58,29 +58,14 @@ class Details extends Model{
 
     static function getData($source) {
         $data = new  \stdClass();
-        $globalRate = \ConvertCurrency::convert($source->FromCurrency->code,$source->ToCurrency->code);
-        $determined = 0;
-        $myType = '';
-        
-        if($source->type == 1){
-            $myType = 'نسبة';
-            $determined = round( ($source->rate * $globalRate) / 100 , 4);
-        }elseif($source->type == 2){
-            $myType = 'مبلغ';
-            $determined = $source->rate;
-        }
-
         $data->id = $source->id;
         $data->from_id = $source->from_id;
         $data->from = $source->FromCurrency;
         $data->to_id = $source->to_id;
         $data->to = $source->ToCurrency;
-        $data->daily_value = $globalRate;
-        $data->determined = $determined;
-        $data->convert = $globalRate - $determined ;
         $data->type = $source->type;
         $data->rate = $source->rate;
-        $data->type_name = $myType;
+        $data->type_name = 'مبلغ';
         $data->active = $source->is_active == 1 ? "مفعل" : "غير مفعل";
         $data->is_active = $source->is_active;
         return $data;

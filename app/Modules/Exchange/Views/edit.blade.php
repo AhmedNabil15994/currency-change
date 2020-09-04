@@ -110,7 +110,7 @@
                                         <select class="form-control" name="details_id"> 
                                             <option value="">اختر عملية التحويل</option>
                                             @foreach($data->currencies as $currency)
-                                            <option value="{{ $currency->id }}" data-area="{{ $currency->convert }}" data-area2="{{ $currency->to->name }}" {{ $data->data->details_id == $currency->id ? 'selected' : '' }}>{{ $currency->from->name }} الي {{ $currency->to->name }}</option>
+                                            <option value="{{ $currency->id }}" data-area="{{ $currency->rate }}" data-area2="{{ $currency->to->name }}" {{ $data->data->details_id == $currency->id ? 'selected' : '' }}>{{ $currency->from->name }} الي {{ $currency->to->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>

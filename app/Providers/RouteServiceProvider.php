@@ -58,6 +58,7 @@ class RouteServiceProvider extends ServiceProvider
             require app_path('Modules/DelegateCommission/routes.php');
             require app_path('Modules/Delegates/routes.php');
             require app_path('Modules/BankAccounts/routes.php');
+            require app_path('Modules/StorageTransfers/routes.php');
             require app_path('Modules/Storages/routes.php');
             require app_path('Modules/Transfers/routes.php');
             require app_path('Modules/Clients/routes.php');

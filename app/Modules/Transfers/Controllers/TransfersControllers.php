@@ -87,6 +87,7 @@ class TransfersControllers extends Controller {
             \Session::flash('error', "هذا الحساب البنكي غير موجود");
         }
 
+        $commission_value = null;
         if($input['type'] == 2){
             if(!isset($input['details_id']) || empty($input['details_id'])){
                 \Session::flash('error', 'يرجي اختيار نوع تحويل العملات');
@@ -99,7 +100,10 @@ class TransfersControllers extends Controller {
                 return redirect()->back()->withInput();
             }
             $detailsObj = Details::getData($detailsObj);
-            
+            if(isset($input['commission_rate']) && isset($detailsObj->rate)){
+                $commission_value = round($input['commission_rate'] / 100 * ($input['balance'] * $detailsObj->rate) ,2);
+            }   
+
             $exchangeObj = Exchange::getOne($bankObj->exchange_id);
             $exchangeObj->type = 2;
             $exchangeObj->shop_id = $bankAccount->shop_id;
@@ -107,14 +111,14 @@ class TransfersControllers extends Controller {
             $exchangeObj->user_id = 0;
             $exchangeObj->from_id = $detailsObj->from_id;
             $exchangeObj->to_id = $detailsObj->to_id;
-            $exchangeObj->convert_price = $detailsObj->convert;
+            $exchangeObj->convert_price = $detailsObj->rate;
             $exchangeObj->amount = $input['balance'];
-            $exchangeObj->paid = round($input['balance'] * $detailsObj->convert ,2);
+            $exchangeObj->paid = round(($input['balance'] * $detailsObj->rate) + $commission_value ,2);
             $exchangeObj->updated_at = DATE_TIME;
             $exchangeObj->updated_by = USER_ID;
             $exchangeObj->save();
         }
-
+        
         $bankObj->type = $input['type'];
         $bankObj->delegate_id = $input['delegate_id'];
         $bankObj->company = $input['company'];
@@ -123,11 +127,12 @@ class TransfersControllers extends Controller {
         $bankObj->exchange_id = isset($exchangeObj->id) ? $exchangeObj->id : null;
         $bankObj->details_id = isset($input['details_id']) ? $input['details_id'] : null;
         $bankObj->new_currency_id = isset($detailsObj->to_id) ? $detailsObj->to_id : null;
-        $bankObj->rate = isset($detailsObj->convert) ? $detailsObj->convert : null;
+        $bankObj->rate = isset($detailsObj->rate) ? $detailsObj->rate : null;
         $bankObj->total = isset($exchangeObj->paid) ? $exchangeObj->paid : null;
         $bankObj->balance = $input['balance'];
+        $bankObj->commission_rate = isset($input['commission_rate']) ? $input['commission_rate'] : null;
+        $bankObj->commission_value = $commission_value;
         $bankObj->bank_account_id = $input['bank_account_id'];
-        $bankObj->is_active = isset($input['active']) ? 1 : 0;
         $bankObj->updated_at = DATE_TIME;
         $bankObj->updated_by = USER_ID;
         $bankObj->save();
@@ -163,7 +168,7 @@ class TransfersControllers extends Controller {
         if($bankAccount == null){
             \Session::flash('error', "هذا الحساب البنكي غير موجود");
         }
-
+        $commission_value = null;
         if($input['type'] == 2){
             if(!isset($input['details_id']) || empty($input['details_id'])){
                 \Session::flash('error', 'يرجي اختيار نوع تحويل العملات');
@@ -177,6 +182,10 @@ class TransfersControllers extends Controller {
             }
             $detailsObj = Details::getData($detailsObj);
             
+            if(isset($input['commission_rate']) && isset($detailsObj->rate)){
+                $commission_value = round($input['commission_rate'] / 100 * ($input['balance'] * $detailsObj->rate) ,2);
+            }   
+
             $exchangeObj = new Exchange;
             $exchangeObj->type = 2;
             $exchangeObj->shop_id = $bankAccount->shop_id;
@@ -184,9 +193,9 @@ class TransfersControllers extends Controller {
             $exchangeObj->user_id = 0;
             $exchangeObj->from_id = $detailsObj->from_id;
             $exchangeObj->to_id = $detailsObj->to_id;
-            $exchangeObj->convert_price = $detailsObj->convert;
+            $exchangeObj->convert_price = $detailsObj->rate;
             $exchangeObj->amount = $input['balance'];
-            $exchangeObj->paid = round($input['balance'] * $detailsObj->convert ,2);
+            $exchangeObj->paid = round(($input['balance'] * $detailsObj->rate) + $commission_value ,2);
             $exchangeObj->created_at = DATE_TIME;
             $exchangeObj->created_by = USER_ID;
             $exchangeObj->save();
@@ -201,11 +210,12 @@ class TransfersControllers extends Controller {
         $bankObj->exchange_id = isset($exchangeObj->id) ? $exchangeObj->id : null;
         $bankObj->details_id = isset($input['details_id']) ? $input['details_id'] : null;
         $bankObj->new_currency_id = isset($detailsObj->to_id) ? $detailsObj->to_id : null;
-        $bankObj->rate = isset($detailsObj->convert) ? $detailsObj->convert : null;
+        $bankObj->rate = isset($detailsObj->rate) ? $detailsObj->rate : null;
         $bankObj->total = isset($exchangeObj->paid) ? $exchangeObj->paid : null;
         $bankObj->balance = $input['balance'];
+        $bankObj->commission_rate = isset($input['commission_rate']) ? $input['commission_rate'] : null;
+        $bankObj->commission_value = $commission_value;
         $bankObj->bank_account_id = $input['bank_account_id'];
-        $bankObj->is_active = isset($input['active']) ? 1 : 0;
         $bankObj->created_at = DATE_TIME;
         $bankObj->created_by = USER_ID;
         $bankObj->save();
