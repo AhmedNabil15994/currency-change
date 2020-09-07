@@ -185,9 +185,9 @@
                                     <td>{{ $v++ }}</td>
                                     <td colspan="{{ $data->shops_count / 3 }}"><b>الرصيد النهائي للفروع</b></td>
                                     <td class="text-center" colspan="{{ 1 + $data->shops_count  }}"> 
-                                        @for($d=0;$d<count($shopDetails);$d++)
-                                        @if($shopDetails[$d] != 0)
-                                        <b>{{ $shopDetails[$d] }} {{ $data->currencies[$d] }} <br></b>
+                                        @for($d=0;$d<count($data->allTotals);$d++)
+                                        @if($data->allTotals[$d] != 0)
+                                        <b>{{ $data->allTotals[$d] }} {{ $data->currencies[$d] }} <br></b>
                                         @endif
                                         @endfor                                        
                                     </td>
