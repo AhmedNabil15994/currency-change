@@ -33,11 +33,22 @@
                                 <div class="col-xs-12">
                                     <div class="col-xs-12 col-sm-6 col-md-3">
                                         <div class="form-group">
-                                            <label>الفرع</label>
+                                            <label>الفرع (الايداع)</label>
                                             <select class="form-control" name="shop_id"> 
                                                 <option value="">اختر الفرع</option>
                                                 @foreach($data->shops as $shop)
                                                 <option value="{{ $shop->id }}" {{ old('shop_id') == $shop->id ? 'selected' : '' }}>{{ $shop->title }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-6 col-md-3">
+                                        <div class="form-group">
+                                            <label>الفرع (السحب)</label>
+                                            <select class="form-control" name="to_shop_id"> 
+                                                <option value="">اختر الفرع</option>
+                                                @foreach($data->shops as $shop)
+                                                <option value="{{ $shop->id }}" {{ old('to_shop_id') == $shop->id ? 'selected' : '' }}>{{ $shop->title }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -79,13 +90,13 @@
                                             <input type="text" class="form-control" name="client_name" placeholder="اسم العميل" value="{{ old('client_name') }}">
                                         </div>
                                     </div>
-                                    <div class="clearfix"></div>
                                     <div class="col-xs-12 col-sm-6 col-md-3 client-data">
                                         <div class="form-group">
                                             <label>رقم التليفون</label>
                                             <input type="text" class="form-control" name="client_phone" placeholder="رقم التليفون" value="{{ old('client_phone') }}">
                                         </div>
                                     </div>
+                                    <div class="clearfix"></div>
                                 </div>
                                 <div class="col-xs-12">
                                     <div class="col-xs-12 col-sm-6 col-md-3">

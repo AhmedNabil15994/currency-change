@@ -185,18 +185,18 @@ class ReportsControllers extends Controller {
         })->selectRaw('shop_id,sum(total) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),shop_id'))->get(['myTotal','created_at','shop_id']);
         $expenses = reset($expenses);
 
-        $outcomingSAR = Exchange::NotDeleted()->whereIn('shop_id',$this->shops)->where(function($whereQuery) use ($input){
+        $outcomingSAR = Exchange::NotDeleted()->whereIn('to_shop_id',$this->shops)->where(function($whereQuery) use ($input){
             if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
                 $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
             }
-        })->where('to_id',1)->selectRaw('shop_id,sum(paid) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),shop_id'))->get(['shop_id','myTotal','created_at']);
+        })->where('to_id',1)->selectRaw('to_shop_id as shop_id,sum(paid) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),to_shop_id'))->get(['shop_id','myTotal','created_at']);
         $outcomingSAR = reset($outcomingSAR);
 
-        $outComingData = Exchange::NotDeleted()->whereIn('shop_id',$this->shops)->where(function($whereQuery) use ($input){
+        $outComingData = Exchange::NotDeleted()->whereIn('to_shop_id',$this->shops)->where(function($whereQuery) use ($input){
             if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
                 $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
             }
-        })->where('to_id','!=',1)->selectRaw('shop_id,to_id as currency,sum(paid) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),shop_id,to_id'))->get(['shop_id,currency','myTotal','created_at']);
+        })->where('to_id','!=',1)->selectRaw('to_shop_id as shop_id,to_id as currency,sum(paid) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),to_shop_id,to_id'))->get(['shop_id,currency','myTotal','created_at']);
         $outComingData = reset($outComingData);
 
         $inComingData = Exchange::NotDeleted()->whereIn('shop_id',$this->shops)->where(function($whereQuery) use ($input){
@@ -318,11 +318,11 @@ class ReportsControllers extends Controller {
         $totals = [];
         $input = \Input::all();
 
-        $outComingData = Exchange::NotDeleted()->whereIn('shop_id',$this->shops)->where(function($whereQuery) use ($input){
+        $outComingData = Exchange::NotDeleted()->whereIn('to_shop_id',$this->shops)->where(function($whereQuery) use ($input){
             if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
                 $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
             }
-        })->selectRaw('shop_id,to_id as currency,sum(paid) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),shop_id,to_id'))->get(['shop_id,currency','myTotal','created_at']);
+        })->selectRaw('to_shop_id as shop_id,to_id as currency,sum(paid) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),to_shop_id,to_id'))->get(['shop_id,currency','myTotal','created_at']);
         $outComingData = reset($outComingData);
 
         $inComingData = Exchange::NotDeleted()->whereIn('shop_id',$this->shops)->where(function($whereQuery) use ($input){
@@ -411,11 +411,11 @@ class ReportsControllers extends Controller {
         $totals = [];
         $input = \Input::all();
 
-        $outComingData = Exchange::NotDeleted()->whereIn('shop_id',$this->shops)->where(function($whereQuery) use ($input){
+        $outComingData = Exchange::NotDeleted()->whereIn('to_shop_id',$this->shops)->where(function($whereQuery) use ($input){
             if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
                 $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
             }
-        })->selectRaw('shop_id,to_id as currency,sum(paid) as myTotal,DATE_FORMAT(created_at,"%m-%Y") as created_at')->groupBy(\DB::raw('DATE_FORMAT(created_at,"%m-%Y"),shop_id,to_id'))->get(['shop_id,currency','myTotal','created_at']);
+        })->selectRaw('to_shop_id as shop_id,to_id as currency,sum(paid) as myTotal,DATE_FORMAT(created_at,"%m-%Y") as created_at')->groupBy(\DB::raw('DATE_FORMAT(created_at,"%m-%Y"),to_shop_id,to_id'))->get(['shop_id,currency','myTotal','created_at']);
         $outComingData = reset($outComingData);
 
         $inComingData = Exchange::NotDeleted()->whereIn('shop_id',$this->shops)->where(function($whereQuery) use ($input){

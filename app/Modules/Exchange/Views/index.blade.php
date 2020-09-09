@@ -12,7 +12,7 @@
                         <ul class="nav navbar-right panel_toolbox">
                             <div align="right">
                                 <button type="submit" class="btn btn-primary" style="width:110px;"><i class="fa fa-search"></i> بحث ..</button>
-                                @if(Input::has('from_id') || Input::has('to_id') || Input::has('type') || Input::has('client_id') || Input::has('delegate_id') || Input::has('shop_id'))
+                                @if(Input::has('from_id') || Input::has('to_id') || Input::has('type') || Input::has('client_id') || Input::has('delegate_id') || Input::has('shop_id') || Input::has('to_shop_id'))
                                     <a href="{{ URL::to('/exchanges') }}" type="submit" class="btn btn-danger" style="color: black;"><i class="fa fa-redo"></i></a>
                                 @endif
                                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
@@ -24,11 +24,22 @@
                         <div class="row">
                             <div class="col-xs-6 col-md-4">
                                 <div class="form-group">
-                                    <label>الفرع</label>
+                                    <label>الفرع (الايداع)</label>
                                     <select class="form-control" name="shop_id"> 
                                         <option value="0">اختر الفرع ...</option>
                                         @foreach($data->shops as $shop)
                                         <option value="{{ $shop->id }}" {{ Input::get('shop_id') == $shop->id ? 'selected' : '' }}>{{ $shop->title }}</option>
+                                        @endforeach 
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-md-4">
+                                <div class="form-group">
+                                    <label>الفرع (السحب)</label>
+                                    <select class="form-control" name="to_shop_id"> 
+                                        <option value="0">اختر الفرع ...</option>
+                                        @foreach($data->shops as $shop)
+                                        <option value="{{ $shop->id }}" {{ Input::get('to_shop_id') == $shop->id ? 'selected' : '' }}>{{ $shop->title }}</option>
                                         @endforeach 
                                     </select>
                                 </div>
@@ -121,7 +132,8 @@
                         <thead>
                         <tr>
                             <th>ID</th>
-                            <th class="text-right">الفرع</th>
+                            <th class="text-right">الفرع (الايداع)</th>
+                            <th class="text-right">الفرع (السحب)</th>
                             <th class="text-right">نوع العميل</th>
                             <th class="text-right">العميل</th>
                             <th class="text-right">العملة (من)</th>
@@ -138,6 +150,7 @@
                             <tr id="tableRaw{{ $value->id }}">
                                 <td width="3%">{{ $value->id }}</td>
                                 <td>{{ $value->shop_name }}</td>
+                                <td>{{ $value->to_shop_name }}</td>
                                 <td>{{ $value->type_text }}</td>
                                 <td>{{ $value->user_name }}</td>
                                 <td>{{ $value->from->name }}</td>
@@ -160,7 +173,8 @@
                         @if($data->pagination->total_count == 0)
                             <tr>
                                 <td></td>
-                                <td colspan="10">لا يوجد عملاء</td>
+                                <td colspan="11">لا يوجد عملاء</td>
+                                <td style="display: none;"></td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>

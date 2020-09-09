@@ -9,7 +9,7 @@ class AuthControllers extends Controller {
 
     public function login() {
         if(\Session::has('user_id')){
-            return redirect('/exchanges');
+            return redirect('/');
         }
         return view('login');
     }
@@ -82,7 +82,7 @@ class AuthControllers extends Controller {
         }
 
         \Session::flash('success', "مرحبا بك " . $dataObj->first_name);
-        return redirect('/exchanges');
+        return redirect('/');
 	}
 
 	public function logout() {

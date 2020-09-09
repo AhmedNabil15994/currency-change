@@ -15,6 +15,10 @@ class Exchange extends Model{
         return $this->belongsTo('\App\Models\Shop','shop_id');
     }
 
+    public function ToShop(){
+        return $this->belongsTo('\App\Models\Shop','to_shop_id');
+    }
+
     public function FromCurrency(){
         return $this->belongsTo('\App\Models\Currency','from_id');
     }
@@ -32,6 +36,9 @@ class Exchange extends Model{
         }
         if (isset($input['shop_id']) && !empty($input['shop_id'])) {
             $source->where('shop_id', $input['shop_id']);
+        }
+        if (isset($input['to_shop_id']) && !empty($input['to_shop_id'])) {
+            $source->where('to_shop_id', $input['to_shop_id']);
         }
         if (isset($input['to_id']) && !empty($input['to_id'])) {
             $source->where('to_id', $input['to_id']);
@@ -52,7 +59,7 @@ class Exchange extends Model{
             $source->where('created_at','>=',$input['from'].' 00:00:00')->where('created_at','<=',$input['to'].' 23:59:59');
         }
         if (!IS_ADMIN) {
-            $source->where('shop_id', \Session::get('shop_id'));
+            $source->where('shop_id', \Session::get('shop_id'))->orWhere('to_shop_id',\Session::get('shop_id'));
         }
 
         $source->where('user_id','!=',0)->orderBy('id','DESC');
@@ -100,7 +107,9 @@ class Exchange extends Model{
         $data->user_name = $user_name;
         $data->user_id = $source->user_id;
         $data->shop_id = $source->shop_id;
+        $data->to_shop_id = $source->to_shop_id;
         $data->shop_name = $source->Shop->title;
+        $data->to_shop_name = $source->ToShop != null ? $source->ToShop->title : '';
         $data->from_id = $source->from_id;
         $data->from = $source->FromCurrency;
         $data->details_id = $source->details_id;

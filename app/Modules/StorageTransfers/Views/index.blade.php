@@ -101,6 +101,7 @@
                             <th class="text-right">المحول اليه</th>
                             <th class="text-right">الرصيد المحول</th>
                             <th class="text-right">العملة</th>
+                            <th class="text-right">التاريخ</th>
                             <th>العمليات</th>
                         </tr>
                         </thead>
@@ -113,6 +114,7 @@
                                 <td>{{ $value->to_text }}</td>
                                 <td>{{ $value->total }}</td>
                                 <td>{{ $value->currency_name }}</td>
+                                <td>{{ $value->created_at }}</td>
                                 <td class="actions" width="15%" align="left">
                                     @if(\Helper::checkRules('edit-storage-transfer'))
                                         <a href="{{ URL::to('/storage-transfers/edit/' . $value->id) }}" class="btn btn-info btn-xs"><i class="fa fa-pencil-alt"></i> تعديل </a>
@@ -127,7 +129,8 @@
                         @if($data->pagination->total_count == 0)
                             <tr>
                                 <td></td>
-                                <td colspan="6">لا يوجد حسابات بنكية</td>
+                                <td colspan="7">لا يوجد حسابات بنكية</td>
+                                <td style="display: none;"></td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>

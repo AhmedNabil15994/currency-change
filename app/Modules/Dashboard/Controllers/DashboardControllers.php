@@ -1,11 +1,12 @@
 <?php namespace App\Http\Controllers;
 
 use App\Models\Shop;
-use App\Models\ProductDetails;
 use App\Models\Expense;
-use App\Models\SalesInvoice;
-use App\Models\SwitchOperations;
-use App\Models\SalesItem;
+use App\Models\Exchange;
+use App\Models\Currency;
+use App\Models\StorageTransfer;
+use App\Models\ShopStorage;
+use App\Models\BankAccount;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class DashboardControllers extends Controller {
 	public $shops;
     public $startDate;
     public $endDate;
-
+    
     function __construct(){
         $input = \Input::all();
         $shops = [];
@@ -41,158 +42,111 @@ class DashboardControllers extends Controller {
         $this->endDate = $endDate;
     }
 
-    public function getChartData($start=null,$end=null){
-        $input = \Input::all();
-        
-        if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
-        	$start = $input['from'];
-        	$end = $input['to'];
-        }
-
-        $datediff = strtotime($end) - strtotime($start);
-        $daysCount = round($datediff / (60 * 60 * 24));
-        $datesArray = [];
-
-        if($daysCount > 2){
-            for($i=0;$i<$daysCount;$i++){
-                $datesArray[$i] = date('Y-m-d',strtotime($start.'+'.$i."day") );
-            }
-            $datesArray[$daysCount] = $end;  
-        }else{
-        	$datesArray[0] = $start;
-            $datesArray[1] = $end;  
-        }
-
-        $chartData = [];
-        $dataCount = count($datesArray);
-        for($i=0;$i<$dataCount;$i++){
-            if(IS_ADMIN == true){
-            	if($dataCount == 1){
-                	$count = SalesInvoice::NotDeleted()->where('status',1)->where('created_at','>=',$datesArray[0].' 00:00:00')->where('created_at','<=',$datesArray[0].' 23:59:59')->sum('paid');
-            	}else{
-            		if($i < count($datesArray)){
-                		$count = SalesInvoice::NotDeleted()->where('status',1)->where('created_at','>=',$datesArray[$i].' 00:00:00')->where('created_at','<=',$datesArray[$i].' 23:59:59')->sum('paid');
-            		}
-            	}
+    public function prepareStorageData($data,$totals,$loopData,$type){
+        foreach ($loopData as $expense) {
+            $currency = isset($expense->currency) ? $expense->currency : 1;
+            $currencyIndex = $currency - 1;
+            if(!isset($data[$expense->created_at][$expense->shop_id])){
+                $data[$expense->created_at][$expense->shop_id] = [[0,0,0,0,0,0],[0,0,0,0,0,0]];
+                $data[$expense->created_at][$expense->shop_id][$type][$currencyIndex] = $data[$expense->created_at][$expense->shop_id][$type][$currencyIndex] + $expense->myTotal;
             }else{
-    			$shop_id = Session::get('shop_id');
-            	if(Session::get('group_id') == 3){
-            		if($dataCount == 1){
-	                	$count = SalesInvoice::NotDeleted()->where('shop_id',$shop_id)->where('status',1)->where('created_at','>=',$datesArray[0].' 00:00:00')->where('created_at','<=',$datesArray[0].' 23:59:59')->sum('paid');
-	            	}else{
-	            		if($i < count($datesArray)){
-	                		$count = SalesInvoice::NotDeleted()->where('shop_id',$shop_id)->where('status',1)->where('created_at','>=',$datesArray[$i].' 00:00:00')->where('created_at','<=',$datesArray[$i].' 23:59:59')->sum('paid');
-	            		}
-	            	}
-            	}else{
-            		if($dataCount == 1){
-	                	$count = SalesInvoice::NotDeleted()->where('shop_id',$shop_id)->where('user_id',USER_ID)->where('status',1)->where('created_at','>=',$datesArray[0].' 00:00:00')->where('created_at','<=',$datesArray[0].' 23:59:59')->sum('number_of_items');
-	            	}else{
-	            		if($i < count($datesArray)){
-	                		$count = SalesInvoice::NotDeleted()->where('shop_id',$shop_id)->where('user_id',USER_ID)->where('status',1)->where('created_at','>=',$datesArray[$i].' 00:00:00')->where('created_at','<=',$datesArray[$i].' 23:59:59')->sum('number_of_items');
-	            		}
-	            	}
-            	}
+                $data[$expense->created_at][$expense->shop_id][$type][$currencyIndex] = $data[$expense->created_at][$expense->shop_id][$type][$currencyIndex] + $expense->myTotal;
             }
-            $chartData[0][$i] = $datesArray[$i];
-            $chartData[1][$i] = $count;
+
+            if(!isset($totals[$expense->shop_id])){
+                $totals[$expense->shop_id] = [[0,0,0,0,0,0],[0,0,0,0,0,0]];
+                $totals[$expense->shop_id][$type][$currencyIndex] = $totals[$expense->shop_id][$type][$currencyIndex] + $expense->myTotal;
+            }else{
+                $totals[$expense->shop_id][$type][$currencyIndex] = $totals[$expense->shop_id][$type][$currencyIndex] + $expense->myTotal;
+            }
         }
-        return $chartData;
+        return [$data,$totals];
     }
 
-    public function calExpenseAndIncome($startDate,$endDate){
-    	$safeData = [];
-        $totals = [0,0,0];
-        foreach ($this->shops as $shop_id) {
-            $expensesCollection = Expense::NotDeleted()->where('shop_id',$shop_id)->where('created_at','>=',$startDate)->where('created_at','<=',$endDate);
-            $expenses = $expensesCollection->sum('total');
-            $incomingCollection = SalesInvoice::NotDeleted()->where('status',1)->where('shop_id',$shop_id)->where('created_at','>=',$startDate)->where('created_at','<=',$endDate);
-            $incoming = $incomingCollection->sum('paid');
-            $switches = SwitchOperations::NotDeleted()->where('shop_id',$shop_id)->where('created_at','>=',$startDate)->where('created_at','<=',$endDate)->get();
-            $totalSwitches = 0;
-            $totalBack = 0;
-
-            foreach ($switches as $value) {
-                $switchDate = date('Y-m-d',strtotime($value->created_at));
-                $salesObj = SalesInvoice::find($value->invoice_id);
-                if($salesObj){
-                    $invoiceDate = date('Y-m-d',strtotime($salesObj->created_at));
-                    $expenses-= $value->back; 
-                    if($switchDate != $invoiceDate){
-                        $totalSwitches+= $value->paid;                    
-                        $totalBack+= $value->back; 
-                    }
-                }
+    public function getBalances($totals){
+        $balances = [];
+        $allTotals = [0,0,0,0,0,0];
+        $storages = ShopStorage::NotDeleted()->select('*')->selectRaw(\DB::raw('sum(balance) as balance'))->whereIn('shop_id',$this->shops)->groupBy('currency_id','shop_id')->where('is_active',1)->get();
+        foreach ($storages as $oneStorage) {
+            if(!isset($balances[$oneStorage->shop_id])){
+                $balances[$oneStorage->shop_id] = [0,0,0,0,0,0];   
             }
-            
-            foreach ($expensesCollection->get() as $values) {
-                if($values->invoice_id > 0 && $values->type){
-                    $salesObj = SalesInvoice::find($values->invoice_id);
-                    $expenseDate = date('Y-m-d',strtotime($values->created_at));
-                    if($salesObj && $values->type == 5){
-                        $invoiceDate = date('Y-m-d',strtotime($salesObj->created_at));
-                        $expenses-= $values->total;
-                        if($expenseDate != $invoiceDate){
-                            $totalBack+= $values->total;
-                        }
-                    }                    
-                }
+            if(!isset($totals[$oneStorage->shop_id])){
+                $totals[$oneStorage->shop_id][1] = [0,0,0,0,0,0];
+                $totals[$oneStorage->shop_id][0] = [0,0,0,0,0,0];
             }
-
-            $allIncoming = $incoming + $totalSwitches;
-            $totalExpense = $expenses + $totalBack;
-            $safe = $allIncoming - $totalExpense;
-            $totals[0] = round( $totals[0] + $allIncoming ,2);
-            $totals[1] = round( $totals[1] + $totalExpense ,2);
-            $totals[2] = round( $totals[2] + $safe ,2);
+            $balances[$oneStorage->shop_id][$oneStorage->currency_id-1] = $oneStorage->balance + $totals[$oneStorage->shop_id][1][$oneStorage->currency_id-1] - $totals[$oneStorage->shop_id][0][$oneStorage->currency_id-1];
+            $allTotals[$oneStorage->currency_id-1] = $balances[$oneStorage->shop_id][$oneStorage->currency_id-1] + $allTotals[$oneStorage->currency_id-1];
         }
-        return $totals;
+        return [$balances,$allTotals];
     }
 
     public function index(){
-        dd('dashboard');
-
-    	$input = \Input::all();
-    	$now = date('Y-m-d');
-    	if(Session::get('group_id') == 1 && IS_ADMIN){   // IS_ADMIN
-    		$dataList['sold_products'] = SalesInvoice::NotDeleted()->where('status',1)->where('created_at','>=',$now.' 00:00:00')->where('created_at','<=',$now.' 23:59:59')->count();
-    		$dataList['salesInvoices'] = SalesInvoice::NotDeleted()->where('created_at','>=',$now.' 00:00:00')->where('created_at','<=',$now.' 23:59:59')->count();
-
-    		$calExpenseAndIncomeArray = $this->calExpenseAndIncome($this->startDate,$this->endDate);
-    		$totals = $calExpenseAndIncomeArray;
-    		$dataList['chartData'] = $this->getChartData(date('Y-m-d',strtotime($now.' -7 days')),$now);
-    		$dataList['income'] = round($totals[0] ,2);
-    		$dataList['expense'] = round($totals[1], 2);
-    		$dataList['safe'] = round($totals[2] , 2);
-    		$dataList['totalIncome'] = SalesInvoice::NotDeleted()->where('status',1)->sum('paid');
-    		$dataList['totalExpense'] = Expense::NotDeleted()->whereNotIn('type',[4,5])->sum('total');
-    		$dataList['totalSafe'] = round( $dataList['totalIncome'] - $dataList['totalExpense'] ,2);
-    		$dataList['most_sold_products'] = ProductDetails::soldProducts(5)['data'];
-    		$dataList['most_sold_shop_products'] = ProductDetails::soldShopProducts(5)['data'];
-    		$dataList['most_sold_workers'] = SalesInvoice::soldWorkers(5)['data'];
-    	}else{
-    		$shop_id = Session::get('shop_id');
-    		$dataList['sold_products'] = SalesInvoice::NotDeleted()->where('status',1)->where('shop_id',$shop_id)->where('created_at','>=',$now.' 00:00:00')->where('created_at','<=',$now.' 23:59:59')->count();
-    		$dataList['salesInvoices'] = SalesInvoice::NotDeleted()->where('shop_id',$shop_id)->where('created_at','>=',$now.' 00:00:00')->where('created_at','<=',$now.' 23:59:59')->count();
-
-    		$calExpenseAndIncomeArray = $this->calExpenseAndIncome($this->startDate,$this->endDate);
-    		$totals = $calExpenseAndIncomeArray;
-    		$dataList['chartData'] = $this->getChartData(date('Y-m-d',strtotime($now.' -7 days')),$now);
-    		$dataList['income'] = round($totals[0] ,2);
-    		$dataList['expense'] = round($totals[1], 2);
-    		$dataList['safe'] = round($totals[2] , 2);
-            if(Session::get('group_id') == 3){
-                $dataList['totalIncome'] = SalesInvoice::NotDeleted()->where('shop_id',$shop_id)->where('status',1)->sum('paid');
-                $dataList['totalExpense'] = Expense::NotDeleted()->where('shop_id',$shop_id)->whereNotIn('type',[4,5])->sum('total');
-                $dataList['totalSafe'] = round( $dataList['totalIncome'] - $dataList['totalExpense'] ,2);
+        $data = [];
+        $totals = [];
+        $input = \Input::all();
+        $expenses = Expense::NotDeleted()->whereIn('shop_id',$this->shops)->where(function($whereQuery) use ($input){
+            if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
+                $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
             }
-    		$dataList['most_sold_products'] = ProductDetails::soldProducts(5)['data'];
-    		$dataList['most_sold_shop_products'] = ProductDetails::soldShopProducts(5)['data'];
-    		$dataList['most_sold_workers'] = SalesInvoice::soldWorkers(5)['data'];
-    		if(Session::get('group_id') == 2){ 
-    			$dataList['most_last_expenses'] = Expense::userExpenses(5);
-    		}
-    	}
+        })->selectRaw('shop_id,sum(total) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),shop_id'))->get(['myTotal','created_at','shop_id']);
+        $expenses = reset($expenses);
+
+        $outcomingSAR = Exchange::NotDeleted()->whereIn('to_shop_id',$this->shops)->where(function($whereQuery) use ($input){
+            if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
+                $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
+            }
+        })->where('to_id',1)->selectRaw('to_shop_id as shop_id,sum(paid) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),to_shop_id'))->get(['shop_id','myTotal','created_at']);
+        $outcomingSAR = reset($outcomingSAR);
+
+        $outComingData = Exchange::NotDeleted()->whereIn('to_shop_id',$this->shops)->where(function($whereQuery) use ($input){
+            if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
+                $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
+            }
+        })->where('to_id','!=',1)->selectRaw('to_shop_id as shop_id,to_id as currency,sum(paid) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),to_shop_id,to_id'))->get(['shop_id,currency','myTotal','created_at']);
+        $outComingData = reset($outComingData);
+
+        $inComingData = Exchange::NotDeleted()->whereIn('shop_id',$this->shops)->where(function($whereQuery) use ($input){
+            if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
+                $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
+            }
+        })->selectRaw('shop_id,from_id as currency,sum(amount) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),shop_id,from_id'))->get(['shop_id','currency','myTotal','created_at']);
+        $inComingData = reset($inComingData);
+
+        $currencyArray = Currency::NotDeleted()->orderBy('id','ASC')->pluck('name');
+        $currencyArray = reset($currencyArray);
+
+        $outComingTransfers = StorageTransfer::NotDeleted()->whereIn('from_shop_id',$this->shops)->where(function($whereQuery) use ($input){
+            if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
+                $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
+            }
+        })->selectRaw('from_shop_id as shop_id,currency_id as currency,sum(total) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),from_shop_id,currency_id'))->get(['shop_id,currency','myTotal','created_at']);
+        $outComingTransfers = reset($outComingTransfers);
+
+        $inComingTransfers = StorageTransfer::NotDeleted()->whereIn('to_shop_id',$this->shops)->where('type',1)->where(function($whereQuery) use ($input){
+            if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
+                $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
+            }
+        })->selectRaw('to_shop_id as shop_id,currency_id as currency,sum(total) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),to_shop_id,currency_id'))->get(['shop_id','currency','myTotal','created_at']);
+        $inComingTransfers = reset($inComingTransfers);
+
+
+        $expenseData = $this->prepareStorageData($data,$totals,$expenses,0);
+        $outcomingSARData = $this->prepareStorageData($expenseData[0],$expenseData[1],$outcomingSAR,0);
+        $outcomingAllData = $this->prepareStorageData($outcomingSARData[0],$outcomingSARData[1],$outComingData,0);
+        $outComingTransfersData = $this->prepareStorageData($outcomingAllData[0],$outcomingAllData[1],$outComingTransfers,0);
+        $incomingAllData = $this->prepareStorageData($outComingTransfersData[0],$outComingTransfersData[1],$inComingData,1);
+        $inComingTransfersData = $this->prepareStorageData($incomingAllData[0],$incomingAllData[1],$inComingTransfers,1);
+
+        $allData = $inComingTransfersData[0];
+        krsort($allData);
+
+        $balances = $this->getBalances($inComingTransfersData[1]);
+
+        $dataList['balances'] = $balances[0];
+        $dataList['shops'] = Shop::whereIn('id',$this->shops)->orderBy('id','ASC')->get();
+        $dataList['currencies'] = $currencyArray;
+        $dataList['bankAccounts'] = BankAccount::reportList(null,null,'no_paginate')['data'];
         return view('Dashboard.Views.dashboard')->with('data', (Object) $dataList);
     }
 }

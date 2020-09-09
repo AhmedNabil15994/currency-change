@@ -23,7 +23,7 @@
         <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
             <div class="menu_section">
                 <ul class="nav side-menu">
-                    {{-- <li class="{{ Active(URL::to('/')) }}"><a href="{{ URL::to('/') }}"><i class="fas fa-home"></i> الرئيسية</a></li> --}}
+                    <li class="{{ Active(URL::to('/')) }}"><a href="{{ URL::to('/') }}"><i class="fas fa-home"></i> الرئيسية</a></li>
 
                     @if(\Helper::checkRules('list-users,list-groups,list-shops'))
                     <li class="{{ Active(URL::to('/users*')) }} {{ Active(URL::to('/groups*')) }} {{ Active(URL::to('/shops*')) }}"><a><i class="fas fa-users"></i> المستخدمين و الفروع <span class="fas fa-chevron-down"></span></a>

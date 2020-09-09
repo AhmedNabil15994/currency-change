@@ -189,6 +189,7 @@ class TransfersControllers extends Controller {
             $exchangeObj = new Exchange;
             $exchangeObj->type = 2;
             $exchangeObj->shop_id = $bankAccount->shop_id;
+            $exchangeObj->to_shop_id = $bankAccount->shop_id;
             $exchangeObj->details_id = $input['details_id'];
             $exchangeObj->user_id = 0;
             $exchangeObj->from_id = $detailsObj->from_id;
@@ -216,6 +217,7 @@ class TransfersControllers extends Controller {
         $bankObj->commission_rate = isset($input['commission_rate']) ? $input['commission_rate'] : null;
         $bankObj->commission_value = $commission_value;
         $bankObj->bank_account_id = $input['bank_account_id'];
+        $bankObj->is_active = 1;
         $bankObj->created_at = DATE_TIME;
         $bankObj->created_by = USER_ID;
         $bankObj->save();

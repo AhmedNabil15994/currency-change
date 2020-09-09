@@ -20,13 +20,15 @@ class ExchangeControllers extends Controller {
         $rules = [
             'type' => 'required',
             'shop_id' => 'required',
+            'to_shop_id' => 'required',
             'amount' => 'required',
             'details_id' => 'required',
         ];
 
         $message = [
             'type.required' => "يرجي اختيار نوع العمولة",
-            'shop_id.required' => "يرجي اختيار الفرع",
+            'shop_id.required' => "يرجي اختيار فرع الايداع",
+            'to_shop_id.required' => "يرجي اختيار فرع السحب",
             'amount.required' => "يرجي ادخال الكمية المراد تحويلها",
             'details_id.required' => "يرجي اختيار نوع التحويل",
         ];
@@ -91,6 +93,12 @@ class ExchangeControllers extends Controller {
             return redirect()->back()->withInput();
         }
 
+        $toShopObj = Shop::getOne($input['to_shop_id']);
+        if($toShopObj == null ) {
+            \Session::flash('error', "هذا الفرع غير موجود");
+            return redirect()->back()->withInput();
+        }
+
         $user_id = 0 ;
         if($input['type'] == 1){
             if($input['client_id'] == 0){
@@ -141,6 +149,7 @@ class ExchangeControllers extends Controller {
         
         $exchangeObj->type = $input['type'];
         $exchangeObj->shop_id = $input['shop_id'];
+        $exchangeObj->to_shop_id = $input['to_shop_id'];
         $exchangeObj->details_id = $input['details_id'];
         $exchangeObj->user_id = $user_id;
         $exchangeObj->from_id = $detailsObj->from_id;
@@ -180,6 +189,12 @@ class ExchangeControllers extends Controller {
 
         $shopObj = Shop::getOne($input['shop_id']);
         if($shopObj == null ) {
+            \Session::flash('error', "هذا الفرع غير موجود");
+            return redirect()->back()->withInput();
+        }
+
+        $toShopObj = Shop::getOne($input['to_shop_id']);
+        if($toShopObj == null ) {
             \Session::flash('error', "هذا الفرع غير موجود");
             return redirect()->back()->withInput();
         }
@@ -235,6 +250,7 @@ class ExchangeControllers extends Controller {
         $exchangeObj = new Exchange;
         $exchangeObj->type = $input['type'];
         $exchangeObj->shop_id = $input['shop_id'];
+        $exchangeObj->to_shop_id = $input['to_shop_id'];
         $exchangeObj->details_id = $input['details_id'];
         $exchangeObj->user_id = $user_id;
         $exchangeObj->from_id = $detailsObj->from_id;

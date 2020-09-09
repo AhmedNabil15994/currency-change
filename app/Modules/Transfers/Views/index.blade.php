@@ -111,6 +111,7 @@
                             <th class="text-right">حساب الشركة</th>
                             <th class="text-right">الرصيد</th>
                             <th class="text-right">العملة</th>
+                            <th class="text-right">التاريخ</th>
                             <th>العمليات</th>
                         </tr>
                         </thead>
@@ -125,6 +126,7 @@
                                 <td>{{ $value->company_account }}</td>
                                 <td>{{ $value->balance }}</td>
                                 <td>{{ $value->currency_name }}</td>
+                                <td>{{ $value->created_at }}</td>
                                 <td class="actions" width="15%" align="left">
                                     @if(\Helper::checkRules('edit-transfer'))
                                         <a href="{{ URL::to('/transfers/edit/' . $value->id) }}" class="btn btn-info btn-xs"><i class="fa fa-pencil-alt"></i> تعديل </a>
@@ -139,7 +141,8 @@
                         @if($data->pagination->total_count == 0)
                             <tr>
                                 <td></td>
-                                <td colspan="8">لا يوجد حوالات بنكية</td>
+                                <td colspan="9">لا يوجد حوالات بنكية</td>
+                                <td style="display: none;"></td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>

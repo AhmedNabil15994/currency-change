@@ -40,7 +40,7 @@ $('select[name="type"]').on('change',function(e){
             }else if(type_value == 2){
                 $('select[name="to_id"]').append('<option value="">اختر الحساب البنكي</option>');
                 $.each(data,function(index,item){
-                    $('select[name="to_id"]').append('<option value="'+item.id+'">'+item.name+'</option>');
+                    $('select[name="to_id"]').append('<option value="'+item.id+'">'+item.account_number+' - '+item.name+'</option>');
                 });
             }
             $('select[name="to_id"]').select2();
