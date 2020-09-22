@@ -90,7 +90,7 @@
                                                 <select name="bank_account_id" class="form-control" required>
                                                     <option value="">اختر..</option>
                                                     @foreach($data->accounts as $account)
-                                                    <option value="{{ $account->id }}" {{ $data->data->bank_account_id == $account->id ? 'selected' : '' }}>{{ $account->account_number }} - {{ $account->name }}</option>
+                                                    <option value="{{ $account->id }}" {{ $data->data->bank_account_id == $account->id ? 'selected' : '' }}>{{ $account->account_number }} - {{ $account->name }} - {{ $account->shop_name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>

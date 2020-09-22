@@ -38,8 +38,9 @@ $('select[name="currency_id"]').on('change',function(){
         $('select[name="bank_account_id"]').append('<option value="">اختر..</option>');
         $.get('/transfers/getBanksAccounts/' + $(this).val(),function(data) {
             $.each(data.data,function(index,item){
-                $('select[name="bank_account_id"]').append('<option value="'+item.id+'">'+item.account_number +' - '+item.name+'</option>');
+                $('select[name="bank_account_id"]').append('<option value="'+item.id+'">'+item.account_number +' - '+item.name+' - '+item.shop_name+'</option>');
             });
+            $('select[name="bank_account_id"]').select2();
         })
     }
 })

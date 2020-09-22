@@ -72,6 +72,9 @@ class StorageTransfer extends Model{
 
     static function getData($source) {
         $data = new  \stdClass();
+        if($source->type == 2){
+            $bankObj = BankAccount::getData(BankAccount::getOne($source->to_id));
+        }
         $data->id = $source->id;
         $data->storage_id = $source->storage_id;
         $data->to_id = $source->to_id;
@@ -80,7 +83,7 @@ class StorageTransfer extends Model{
         $data->currency_name = $source->Currency->name;
         $data->type = $source->type;
         $data->type_text = $source->type == 1 ? 'الي صندوق' : 'الي حساب بنكي';
-        $data->to_text = $source->type == 1 ? 'صندوق '. ShopStorage::getData(ShopStorage::getOneById($source->to_id))->shop_name : BankAccount::getOne($source->to_id)->name;
+        $data->to_text = $source->type == 1 ? 'صندوق '. ShopStorage::getData(ShopStorage::getOneById($source->to_id))->shop_name : $bankObj->account_number . ' - ' . $bankObj->name . ' - ' . $bankObj->shop_name;
         $data->to_shop_id = $source->to_shop_id;
         $data->from_shop_id = $source->from_shop_id;
         $data->total = $source->total;

@@ -12,7 +12,7 @@
                         <ul class="nav navbar-right panel_toolbox">
                             <div align="right">
                                 <button type="submit" class="btn btn-primary" style="width:110px;"><i class="fa fa-search"></i> بحث ..</button>
-                                @if(Input::has('company') || Input::has('bank_account_id') || Input::has('type') || Input::has('currency_id') || Input::has('delegate_id'))
+                                @if(Input::has('company') || Input::has('bank_account_id') || Input::has('type') || Input::has('currency_id') || Input::has('delegate_id') || Input::has('office_id'))
                                     <a href="{{ URL::to('/transfers') }}" type="submit" class="btn btn-danger" style="color: black;"><i class="fa fa-redo"></i></a>
                                 @endif
                                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
@@ -49,7 +49,7 @@
                                     <select class="form-control select2" name="bank_account_id">
                                         <option value="0">اختر الحساب البنكي</option>
                                         @foreach($data->accounts as $account)
-                                            <option value="{{ $account->id }}" {{ Input::get('bank_account_id') == $account->id ? 'selected' : '' }}>{{ $account->account_number }}</option>
+                                            <option value="{{ $account->id }}" {{ Input::get('bank_account_id') == $account->id ? 'selected' : '' }}>{{ $account->account_number }} - {{ $account->name }} - {{ $account->shop_name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -68,6 +68,17 @@
                                         <option value="0">اختر العملة</option>
                                         @foreach($data->currencies as $currency)
                                             <option value="{{ $currency->id }}" {{ Input::get('currency_id') == $currency->id ? 'selected' : '' }}>{{ $currency->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <div class="form-group">
+                                    <label>المكتب</label>
+                                    <select class="form-control select2" name="office_id">
+                                        <option value="0">اختر المكتب</option>
+                                        @foreach($data->shops as $shop)
+                                            <option value="{{ $shop->id }}" {{ Input::get('office_id') == $shop->id ? 'selected' : '' }}>{{ $shop->title }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -106,6 +117,7 @@
                             <th>ID</th>
                             <th class="text-right">النوع</th>
                             <th class="text-right">المندوب</th>
+                            <th class="text-right">المكتب</th>
                             <th class="text-right">الحساب البنكي</th>
                             <th class="text-right">الشركة</th>
                             <th class="text-right">حساب الشركة</th>
@@ -121,7 +133,8 @@
                                 <td width="3%">{{ $value->id }}</td>
                                 <td>{{ $value->type_text }}</td>
                                 <td>{{ $value->delegate_name }}</td>
-                                <td>{{ $value->bank_account }}</td>
+                                <td>{{ $value->office_name }}</td>
+                                <td>{{ $value->bank_account }} - {{ $value->account_name }} - {{ $value->shop_name }}</td>
                                 <td>{{ $value->company }}</td>
                                 <td>{{ $value->company_account }}</td>
                                 <td>{{ $value->balance }}</td>
@@ -141,7 +154,8 @@
                         @if($data->pagination->total_count == 0)
                             <tr>
                                 <td></td>
-                                <td colspan="9">لا يوجد حوالات بنكية</td>
+                                <td colspan="10">لا يوجد حوالات بنكية</td>
+                                <td style="display: none;"></td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>

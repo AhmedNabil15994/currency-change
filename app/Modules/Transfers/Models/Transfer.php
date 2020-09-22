@@ -19,6 +19,10 @@ class Transfer extends Model{
         return $this->belongsTo('App\Models\Currency','currency_id');
     }
 
+    function Office(){
+        return $this->belongsTo('App\Models\Shop','office_id');
+    }
+
     function NewCurrency(){
         return $this->belongsTo('App\Models\Currency','new_currency_id');
     }
@@ -86,13 +90,16 @@ class Transfer extends Model{
 
     static function getData($source) {
         $data = new  \stdClass();
+        $bankObj = BankAccount::getData(BankAccount::getOne($source->bank_account_id));
         $data->id = $source->id;
         $data->delegate_id = $source->delegate_id;
         $data->delegate_name = $source->Delegate->name;
         $data->currency_id = $source->currency_id;
         $data->currency_name = $source->Currency->name;
         $data->bank_account_id = $source->bank_account_id;
-        $data->bank_account = $source->BankAccount->account_number;
+        $data->bank_account = $bankObj->account_number;
+        $data->account_name = $bankObj->name;
+        $data->shop_name = $bankObj->shop_name;
         $data->company = $source->company;
         $data->company_account = $source->company_account;
         $data->details_id = $source->details_id;
@@ -102,6 +109,8 @@ class Transfer extends Model{
         $data->new_currency = $source->new_currency_id != null ? $source->NewCurrency->name : '';
         $data->type = $source->type;
         $data->balance = $source->balance;
+        $data->office_id = $source->office_id;
+        $data->office_name = $source->Shop != null ? $source->Shop->title : '';
         $data->commission_rate = $source->commission_rate;
         $data->commission_value = $source->commission_value;
         $data->type = $source->type;

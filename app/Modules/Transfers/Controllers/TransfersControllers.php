@@ -6,6 +6,7 @@ use App\Models\BankAccount;
 use App\Models\Details;
 use App\Models\Exchange;
 use App\Models\Delegate;
+use App\Models\Shop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use Carbon\Carbon;
@@ -21,6 +22,7 @@ class TransfersControllers extends Controller {
             'type' => 'required',
             'company' => 'required',
             'delegate_id' => 'required',
+            'office_id' => 'required',
             'currency_id' => 'required',
             'bank_account_id' => 'required',
             'balance' => 'required',
@@ -30,6 +32,7 @@ class TransfersControllers extends Controller {
             'type.required' => "يرجي اختيار نوع الحوالة البنكية",
             'company.required' => "يرجي ادخال اسم الشركة",
             'delegate_id.required' => "يرجي اختيار المندوب",
+            'office_id.required' => "يرجي اختيار المكتب",
             'bank_account_id.required' => "يرجي اختيار الحساب البنكي",
             'currency_id.required' => "يرجي اختيار نوع العملة",
             'balance.required' => "يرجي ادخال الرصيد",
@@ -45,6 +48,7 @@ class TransfersControllers extends Controller {
         $usersList['delegates'] = Delegate::dataList('no_paginate')['data'];
         $usersList['accounts'] = BankAccount::dataList('no_paginate')['data'];
         $usersList['currencies'] = Currency::dataList('no_paginate')['data'];
+        $usersList['shops'] = Shop::dataList('no_paginate')['data'];
         return view('Transfers.Views.index')
             ->with('data', (Object) $usersList);
     }
@@ -62,6 +66,7 @@ class TransfersControllers extends Controller {
         $data['accounts'] = BankAccount::dataList('no_paginate')['data'];
         $data['currencies'] = Currency::dataList('no_paginate')['data'];
         $data['currencies2'] = Details::dataList('no_paginate')['data'];
+        $data['shops'] = Shop::dataList('no_paginate')['data'];
         $data['data'] = Transfer::getData($userObj);
         return view('Transfers.Views.edit')->with('data', (object) $data);
     }
@@ -85,8 +90,15 @@ class TransfersControllers extends Controller {
         $bankAccount = BankAccount::getOne($input['bank_account_id']);
         if($bankAccount == null){
             \Session::flash('error', "هذا الحساب البنكي غير موجود");
+            return redirect()->back()->withInput();
         }
 
+        $shopObj = Shop::getOne($input['office_id']);
+        if($shopObj == null){
+            \Session::flash('error', "هذا الكتب غير موجود");
+            return redirect()->back()->withInput();
+        }
+        
         $commission_value = null;
         if($input['type'] == 2){
             if(!isset($input['details_id']) || empty($input['details_id'])){
@@ -106,7 +118,7 @@ class TransfersControllers extends Controller {
 
             $exchangeObj = Exchange::getOne($bankObj->exchange_id);
             $exchangeObj->type = 2;
-            $exchangeObj->shop_id = $bankAccount->shop_id;
+            $exchangeObj->shop_id = $input['office_id'];
             $exchangeObj->details_id = $input['details_id'];
             $exchangeObj->user_id = 0;
             $exchangeObj->from_id = $detailsObj->from_id;
@@ -132,6 +144,7 @@ class TransfersControllers extends Controller {
         $bankObj->balance = $input['balance'];
         $bankObj->commission_rate = isset($input['commission_rate']) ? $input['commission_rate'] : null;
         $bankObj->commission_value = $commission_value;
+        $bankObj->office_id = $input['office_id'];
         $bankObj->bank_account_id = $input['bank_account_id'];
         $bankObj->updated_at = DATE_TIME;
         $bankObj->updated_by = USER_ID;
@@ -146,6 +159,7 @@ class TransfersControllers extends Controller {
         $data['accounts'] = BankAccount::dataList('no_paginate')['data'];
         $data['currencies'] = Currency::dataList('no_paginate')['data'];
         $data['currencies2'] = Details::dataList('no_paginate')['data'];
+        $data['shops'] = Shop::dataList('no_paginate')['data'];
         return view('Transfers.Views.add')->with('data', (object) $data);
     }
 
@@ -167,7 +181,15 @@ class TransfersControllers extends Controller {
         $bankAccount = BankAccount::getOne($input['bank_account_id']);
         if($bankAccount == null){
             \Session::flash('error', "هذا الحساب البنكي غير موجود");
+            return redirect()->back()->withInput();
         }
+
+        $shopObj = Shop::getOne($input['office_id']);
+        if($shopObj == null){
+            \Session::flash('error', "هذا الكتب غير موجود");
+            return redirect()->back()->withInput();
+        }
+
         $commission_value = null;
         if($input['type'] == 2){
             if(!isset($input['details_id']) || empty($input['details_id'])){
@@ -188,7 +210,7 @@ class TransfersControllers extends Controller {
 
             $exchangeObj = new Exchange;
             $exchangeObj->type = 2;
-            $exchangeObj->shop_id = $bankAccount->shop_id;
+            $exchangeObj->shop_id = $input['office_id'];
             $exchangeObj->to_shop_id = $bankAccount->shop_id;
             $exchangeObj->details_id = $input['details_id'];
             $exchangeObj->user_id = 0;
@@ -217,6 +239,7 @@ class TransfersControllers extends Controller {
         $bankObj->commission_rate = isset($input['commission_rate']) ? $input['commission_rate'] : null;
         $bankObj->commission_value = $commission_value;
         $bankObj->bank_account_id = $input['bank_account_id'];
+        $bankObj->office_id = $input['office_id'];
         $bankObj->is_active = 1;
         $bankObj->created_at = DATE_TIME;
         $bankObj->created_by = USER_ID;

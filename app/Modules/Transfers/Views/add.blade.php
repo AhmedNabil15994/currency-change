@@ -43,7 +43,7 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-xs-12 col-md-3">
+                                        <div class="col-xs-12 col-md-2">
                                             <div class="form-group">
                                                 <label>المندوب</label>
                                                 <select name="delegate_id" class="form-control" required>
@@ -54,7 +54,18 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-xs-12 col-md-3">
+                                        <div class="col-xs-12 col-md-2">
+                                            <div class="form-group">
+                                                <label>المكتب</label>
+                                                <select name="office_id" class="form-control" required>
+                                                    <option value="">اختر..</option>
+                                                    @foreach($data->shops as $shop)
+                                                    <option value="{{ $shop->id }}" {{ old('office_id') == $shop->id ? 'selected' : '' }}>{{ $shop->title }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-md-2">
                                             <div class="form-group">
                                                 <label>اسم الشركة</label>
                                                 <input type="text" class="form-control" placeholder="اسم الشركة" name="company" value="{{ old('company') }}">
@@ -90,7 +101,7 @@
                                                 <select name="bank_account_id" class="form-control" required>
                                                     <option value="">اختر..</option>
                                                     @foreach($data->accounts as $account)
-                                                    <option value="{{ $account->id }}" {{ old('bank_account_id') == $account->id ? 'selected' : '' }}>{{ $account->account_number }} - {{ $account->name }}</option>
+                                                    <option value="{{ $account->id }}" {{ old('bank_account_id') == $account->id ? 'selected' : '' }}>{{ $account->account_number }} - {{ $account->name }} - {{ $account->shop_name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
