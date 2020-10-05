@@ -130,13 +130,11 @@
                                                 <th class="text-center">
                                                     صادر<br>
                                                     <div class="col-xs-4">{{ $value->currency_name }}</div>
-                                                    <div class="col-xs-4">سعر الاستبدال</div>
                                                     <div class="col-xs-4">{{ $value->to }}</div>
                                                 </th>
                                                 <th class="text-center">
                                                     وارد<br>
                                                     <div class="col-xs-4">{{ $value->currency_name }}</div>
-                                                    <div class="col-xs-4">سعر الاستبدال</div>
                                                     <div class="col-xs-4">{{ $value->to }}</div>
                                                 </th>
                                             </tr>
@@ -148,12 +146,10 @@
                                                 <td>{{ $keyOne }}</td>
                                                 <td class="text-center">
                                                     <div class="col-xs-4">{{ @$one[0][0] }}</div>
-                                                    <div class="col-xs-4">{{ @$one[0][1] }}</div>
                                                     <div class="col-xs-4">{{ @$one[0][2] }}</div>
                                                 </td>
                                                 <td class="text-center">
                                                     <div class="col-xs-4">{{ @$one[1][0] }}</div>
-                                                    <div class="col-xs-4">{{ @$one[1][1] }}</div>
                                                     <div class="col-xs-4">{{ @$one[1][2] }}</div>
                                                 </td>
                                             </tr>

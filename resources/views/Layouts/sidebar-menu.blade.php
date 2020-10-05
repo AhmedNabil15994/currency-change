@@ -76,7 +76,11 @@
                     <li class="{{ Active(URL::to('/exchanges*')) }}"><a><i class="fas fa-exchange-alt"></i> عمليات الاستبدال <span class="fas fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
                             @if(\Helper::checkRules('list-exchanges'))
-                                <li class="{{ Active(URL::to('/exchanges*')) }}"><a href="{{ URL::to('/exchanges') }}">عمليات الاستبدال</a></li>
+                                <li class="{{ Active(URL::to('/exchanges*')) }}"><a href="{{ URL::to('/exchanges') }}">عمليات الاستبدال الفورية</a></li>
+                            @endif
+
+                            @if(\Helper::checkRules('list-wallets'))
+                                <li class="{{ Active(URL::to('/wallets*')) }}"><a href="{{ URL::to('/wallets') }}">ايداع و سحب العملاء</a></li>
                             @endif
                         </ul>
                     </li>
@@ -135,6 +139,9 @@
                             @endif
                             @if(\Helper::checkRules('list-delegates-reports'))
                                 <li class="{{ Active(URL::to('/reports/delegates*')) }}"><a href="{{ URL::to('/reports/delegates') }}">تقارير المندوبين</a></li>
+                            @endif
+                            @if(\Helper::checkRules('list-clients-reports'))
+                                <li class="{{ Active(URL::to('/reports/clients*')) }}"><a href="{{ URL::to('/reports/clients') }}">تقارير العملاء</a></li>
                             @endif
                             @if(\Helper::checkRules('list-daily-reports'))
                                 <li class="{{ Active(URL::to('/reports/daily*')) }}"><a href="{{ URL::to('/reports/daily') }}">التقارير اليومية</a></li>

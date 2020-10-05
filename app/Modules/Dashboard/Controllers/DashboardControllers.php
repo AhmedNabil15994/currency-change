@@ -4,6 +4,7 @@ use App\Models\Shop;
 use App\Models\Expense;
 use App\Models\Exchange;
 use App\Models\Currency;
+use App\Models\Wallet;
 use App\Models\StorageTransfer;
 use App\Models\ShopStorage;
 use App\Models\BankAccount;
@@ -123,6 +124,14 @@ class DashboardControllers extends Controller {
         })->selectRaw('from_shop_id as shop_id,currency_id as currency,sum(total) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),from_shop_id,currency_id'))->get(['shop_id,currency','myTotal','created_at']);
         $outComingTransfers = reset($outComingTransfers);
 
+        $outComingWallets = Wallet::NotDeleted()->whereIn('shop_id',$this->shops)->where('type',2)->where(function($whereQuery) use ($input){
+            if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
+                $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
+            }
+        })->selectRaw('shop_id as shop_id,from_id as currency,sum(amount) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),shop_id,from_id'))->get(['shop_id,currency','myTotal','created_at']);
+        $outComingWallets = reset($outComingWallets);
+
+
         $inComingTransfers = StorageTransfer::NotDeleted()->whereIn('to_shop_id',$this->shops)->where('type',1)->where(function($whereQuery) use ($input){
             if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
                 $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
@@ -130,18 +139,27 @@ class DashboardControllers extends Controller {
         })->selectRaw('to_shop_id as shop_id,currency_id as currency,sum(total) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),to_shop_id,currency_id'))->get(['shop_id','currency','myTotal','created_at']);
         $inComingTransfers = reset($inComingTransfers);
 
+        $inComingWallets = Wallet::NotDeleted()->whereIn('shop_id',$this->shops)->where('type',1)->where(function($whereQuery) use ($input){
+            if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
+                $whereQuery->where('created_at','>=',$this->startDate)->where('created_at','<=',$this->endDate);
+            }
+        })->selectRaw('shop_id as shop_id,from_id as currency,sum(amount) as myTotal,DATE(created_at) as created_at')->groupBy(\DB::raw('Date(created_at),shop_id,from_id'))->get(['shop_id,currency','myTotal','created_at']);
+        $inComingWallets = reset($inComingWallets);
+
 
         $expenseData = $this->prepareStorageData($data,$totals,$expenses,0);
         $outcomingSARData = $this->prepareStorageData($expenseData[0],$expenseData[1],$outcomingSAR,0);
         $outcomingAllData = $this->prepareStorageData($outcomingSARData[0],$outcomingSARData[1],$outComingData,0);
         $outComingTransfersData = $this->prepareStorageData($outcomingAllData[0],$outcomingAllData[1],$outComingTransfers,0);
-        $incomingAllData = $this->prepareStorageData($outComingTransfersData[0],$outComingTransfersData[1],$inComingData,1);
+        $outComingWalletData = $this->prepareStorageData($outComingTransfersData[0],$outComingTransfersData[1],$outComingWallets,0);
+        $incomingAllData = $this->prepareStorageData($outComingWalletData[0],$outComingWalletData[1],$inComingData,1);
         $inComingTransfersData = $this->prepareStorageData($incomingAllData[0],$incomingAllData[1],$inComingTransfers,1);
+        $inComingWalletData = $this->prepareStorageData($inComingTransfersData[0],$inComingTransfersData[1],$inComingWallets,1);
 
-        $allData = $inComingTransfersData[0];
+        $allData = $inComingWalletData[0];
         krsort($allData);
 
-        $balances = $this->getBalances($inComingTransfersData[1]);
+        $balances = $this->getBalances($inComingWalletData[1]);
 
         $dataList['balances'] = $balances[0];
         $dataList['shops'] = Shop::whereIn('id',$this->shops)->orderBy('id','ASC')->get();

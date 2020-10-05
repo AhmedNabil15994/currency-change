@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\Currency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use Carbon\Carbon;
@@ -31,6 +32,7 @@ class ClientsControllers extends Controller {
 
     public function index() {
         $usersList = Client::dataList();
+        $usersList['currencies'] = Currency::dataList('no_paginate')['data'];
         return view('Clients.Views.index')
             ->with('data', (Object) $usersList);
     }
@@ -45,6 +47,7 @@ class ClientsControllers extends Controller {
         }
 
         $data['data'] = Client::getData($userObj);
+        $data['currencies'] = Currency::dataList('no_paginate')['data'];
         return view('Clients.Views.edit')->with('data', (object) $data);
     }
 
@@ -77,6 +80,8 @@ class ClientsControllers extends Controller {
         $userObj->name = $input['name'];
         $userObj->phone = $input['phone'];
         $userObj->identity = $input['identity'];
+        $userObj->currency_id = $input['currency_id'];
+        $userObj->balance = $input['balance'];
         $userObj->is_active = isset($input['active']) ? 1 : 0;
         $userObj->updated_at = DATE_TIME;
         $userObj->updated_by = USER_ID;
@@ -87,7 +92,8 @@ class ClientsControllers extends Controller {
     }
 
     public function add() {
-        return view('Clients.Views.add');
+        $data['currencies'] = Currency::dataList('no_paginate')['data'];
+        return view('Clients.Views.add')->with('data',(object) $data);
     }
 
     public function create() {

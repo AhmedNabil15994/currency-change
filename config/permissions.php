@@ -81,6 +81,13 @@ return [
     'ExchangeControllers@create' => 'add-exchange',
     'ExchangeControllers@delete' => 'delete-exchange',
 
+    'WalletControllers@index' => 'list-wallets',
+    'WalletControllers@edit' => 'edit-wallet',
+    'WalletControllers@update' => 'edit-wallet',
+    'WalletControllers@add' => 'add-wallet',
+    'WalletControllers@create' => 'add-wallet',
+    'WalletControllers@delete' => 'delete-wallet',
+
     'ExpensesControllers@index' => 'list-expenses',
     'ExpensesControllers@edit' => 'edit-expense',
     'ExpensesControllers@update' => 'edit-expense',
@@ -125,6 +132,7 @@ return [
     'ReportsControllers@storages' => 'list-storages-reports',
     'ReportsControllers@bankAccounts' => 'list-bank-accounts-reports',
     'ReportsControllers@delegates' => 'list-delegates-reports',
+    'ReportsControllers@clients' => 'list-clients-reports',
     'ReportsControllers@daily' => 'list-daily-reports',
     'ReportsControllers@yearly' => 'list-yearly-reports',
 

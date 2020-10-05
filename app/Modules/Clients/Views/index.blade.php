@@ -75,6 +75,7 @@
                             <th class="text-right">الاسم</th>
                             <th class="text-right">رقم التليفون</th>
                             <th class="text-right">رقم الهوية</th>
+                            <th class="text-right">الرصيد الافتتاحي</th>
                             <th>الحالة</th>
                             <th>العمليات</th>
                         </tr>
@@ -86,6 +87,7 @@
                                 <td>{{ $value->name }}</td>
                                 <td>{{ $value->phone }}</td>
                                 <td>{{ $value->identity }}</td>
+                                <td>{{ $value->balance . ' '.$value->currency }}</td>
                                 <td width="3%" align="left"><span class="btn {{ $value->is_active == 1 ? "btn-success" : "btn-danger" }} btn-xs"> {{ $value->active }}</span></td>
                                 <td class="actions" width="15%" align="left">
                                     @if(\Helper::checkRules('edit-client'))
@@ -101,7 +103,8 @@
                         @if($data->pagination->total_count == 0)
                             <tr>
                                 <td></td>
-                                <td colspan="5">لا يوجد عملاء</td>
+                                <td colspan="6">لا يوجد عملاء</td>
+                                <td style="display: none;"></td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"></td>

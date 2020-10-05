@@ -160,7 +160,7 @@ class StorageTransfersControllers extends Controller {
         $bankObj->created_by = USER_ID;
         $bankObj->save();
 
-        \Session::flash('success', "تبيه! تم اضافة الحساب البنكي");
+        \Session::flash('success', "تبيه! تم التحويل للحساب البنكي");
         return redirect()->to('storage-transfers/edit/' . $bankObj->id);
     }
 

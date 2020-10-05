@@ -177,7 +177,7 @@ class BankAccount extends Model{
         }
         foreach ($transfersData as $value) {
             $created_at = date('Y-m-d',strtotime($value->created_at));
-            $rate = \ConvertCurrency::convertHistorical($value->Currency->code,$toObj->code,$created_at);
+            $rate = 0;
             if(!isset($transfers[$created_at])){
                 $transfers[$created_at] = [[],[]];
             }
@@ -197,7 +197,7 @@ class BankAccount extends Model{
         $shopStorages = StorageTransfer::NotDeleted()->where('type',2)->where('to_id',$source->id)->get();
         foreach ($shopStorages as $values) {
             $created_at = date('Y-m-d',strtotime($values->created_at));
-            $rate = \ConvertCurrency::convertHistorical($values->Currency->code,$toObj->code,$created_at);
+            $rate = 0;
             if(!isset($transfers[$created_at])){
                 $transfers[$created_at] = [[],[]];
             }
