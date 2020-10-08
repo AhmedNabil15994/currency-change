@@ -73,8 +73,8 @@
                                     </div>
                                     <div class="col-xs-12 col-sm-6 col-md-2 clients">
                                         <div class="form-group">
-                                            <label>قيمة العمولة</label>
-                                            <input type="text" name="commission_value" class="form-control" placeholder="قيمة العمولة" value="{{ old('commission_value') }}">
+                                            <label>العمولة</label>
+                                            <input type="text" name="commission_value" class="form-control" placeholder="العمولة" value="{{ old('commission_value') }}">
                                         </div>
                                     </div>
                                     <div class="clearfix"></div>

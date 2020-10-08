@@ -108,7 +108,7 @@
                             <th class="text-right">سعر التحويل</th>
                             <th class="text-right">الكمية</th>
                             <th class="text-right">نوع العمولة</th>
-                            <th class="text-right">قيمة العمولة</th>
+                            <th class="text-right">العمولة</th>
                             <th class="text-right">سعر البنك</th>
                             <th class="text-right">المكسب</th>
                             <th>التاريخ</th>

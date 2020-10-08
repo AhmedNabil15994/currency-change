@@ -59,15 +59,15 @@
                     </li>
                     @endif
 
-                    @if(\Helper::checkRules('list-currencies,list-details'))
-                    <li class="{{ Active(URL::to('/currencies*')) }} {{ Active(URL::to('/details*')) }}"><a><i class="fas fa-coins"></i> العملات والتحويلات <span class="fas fa-chevron-down"></span></a>
+                    @if(\Helper::checkRules('list-currencies'))
+                    <li class="{{ Active(URL::to('/currencies*')) }} {{ Active(URL::to('/details*')) }}"><a><i class="fas fa-coins"></i> العملات<span class="fas fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
                             @if(\Helper::checkRules('list-currencies'))
                                 <li class="{{ Active(URL::to('/currencies*')) }}"><a href="{{ URL::to('/currencies') }}">العملات</a></li>
                             @endif
-                            @if(\Helper::checkRules('list-details'))
+                            {{-- @if(\Helper::checkRules('list-details'))
                                 <li class="{{ Active(URL::to('/details*')) }}"><a href="{{ URL::to('/details') }}">تحويلات العملات</a></li>
-                            @endif
+                            @endif --}}
                         </ul>
                     </li>
                     @endif
