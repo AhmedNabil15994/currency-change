@@ -36,14 +36,14 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-6">
+                                        <div class="col-xs-12 col-sm-4 col-md-5">
                                             <div class="form-group">
                                                 <label>الرصيد الافتتاحي</label>
                                                 <input type="number" min="0" class="form-control" placeholder="الرصيد الافتتاحي" name="balance" value="{{ old('balance') }}" required>
                                                 
                                             </div>
                                         </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-6">
+                                        <div class="col-xs-12 col-sm-4 col-md-5">
                                             <div class="form-group">
                                                 <label>العملة</label>
                                                 <select class="form-control" name="currency_id"> 
@@ -52,6 +52,14 @@
                                                     <option value="{{ $currency->id }}" data-area="{{ $currency->code }}" {{ old('currency_id') == $currency->id ? 'selected' : '' }}>{{ $currency->name }}</option>
                                                     @endforeach 
                                                 </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-4 col-md-2">
+                                            <div class="form-group">
+                                                <label>تم الدفع </label>
+                                                <div class="checkbox">
+                                                    <input type="checkbox" class="flat" name="paid" {{ old('paid') ? 'checked' : '' }}>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

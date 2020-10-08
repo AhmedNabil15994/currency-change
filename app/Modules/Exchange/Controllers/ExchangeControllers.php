@@ -5,7 +5,6 @@ use App\Models\Currency;
 use App\Models\Delegate;
 use App\Models\Client;
 use App\Models\Shop;
-use App\Models\Details;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use Carbon\Carbon;
@@ -20,17 +19,23 @@ class ExchangeControllers extends Controller {
         $rules = [
             'type' => 'required',
             'shop_id' => 'required',
+            'from_id' => 'required',
+            'to_id' => 'required',
+            'price' => 'required',
             'to_shop_id' => 'required',
             'amount' => 'required',
-            'details_id' => 'required',
+            'bank_price' => 'required',
         ];
 
         $message = [
             'type.required' => "يرجي اختيار نوع العمولة",
             'shop_id.required' => "يرجي اختيار فرع الايداع",
+            'from_id.required' => "يرجي اختيار العملة المحول منها",
+            'to_id.required' => "يرجي اختيار العملة المحول اليها",
+            'price.required' => "يرجي ادخال سعر التغيير",
             'to_shop_id.required' => "يرجي اختيار فرع السحب",
             'amount.required' => "يرجي ادخال الكمية المراد تحويلها",
-            'details_id.required' => "يرجي اختيار نوع التحويل",
+            'bank_price.required' => "يرجي ادخال سعر البنك",
         ];
 
         $validate = \Validator::make($input, $rules, $message);
@@ -58,7 +63,7 @@ class ExchangeControllers extends Controller {
 
         $data['data'] = Exchange::getData($userObj);
         $data['shops'] = Shop::dataList('no_paginate')['data'];
-        $data['currencies'] = Details::dataList('no_paginate')['data'];
+        $data['currencies'] = Currency::dataList('no_paginate')['data'];
         $data['delegates'] = Delegate::dataList('no_paginate')['data'];
         $data['clients'] = Client::dataList('no_paginate')['data'];
         return view('Exchange.Views.edit')->with('data', (object) $data);
@@ -139,24 +144,17 @@ class ExchangeControllers extends Controller {
             $user_id = $delegateObj->id;
         }
 
-
-        $detailsObj = Details::getOne($input['details_id']);
-        if($detailsObj == null ) {
-            \Session::flash('error', "نوع عملية التحويل غير موجود");
-            return redirect()->back()->withInput();
-        }
-        $detailsObj = Details::getData($detailsObj);
         
         $exchangeObj->type = $input['type'];
         $exchangeObj->shop_id = $input['shop_id'];
         $exchangeObj->to_shop_id = $input['to_shop_id'];
-        $exchangeObj->details_id = $input['details_id'];
+        $exchangeObj->bank_price = $input['bank_price'];
         $exchangeObj->user_id = $user_id;
-        $exchangeObj->from_id = $detailsObj->from_id;
-        $exchangeObj->to_id = $detailsObj->to_id;
-        $exchangeObj->convert_price = $detailsObj->rate;
+        $exchangeObj->from_id = $input['from_id'];
+        $exchangeObj->to_id = $input['to_id'];
+        $exchangeObj->convert_price = $input['price'];
         $exchangeObj->amount = floatval($input['amount']);
-        $exchangeObj->paid = round(floatval($input['amount']) * $detailsObj->rate ,2);
+        $exchangeObj->paid = round(floatval($input['amount']) * $input['price'] ,2);
         $exchangeObj->updated_at = DATE_TIME;
         $exchangeObj->updated_by = USER_ID;
         $exchangeObj->save();
@@ -166,7 +164,7 @@ class ExchangeControllers extends Controller {
     }
 
     public function add() {
-        $data['currencies'] = Details::dataList('no_paginate')['data'];
+        $data['currencies'] = Currency::dataList('no_paginate')['data'];
         $data['delegates'] = Delegate::dataList('no_paginate')['data'];
         $data['shops'] = Shop::dataList('no_paginate')['data'];
         $data['clients'] = Client::dataList('no_paginate')['data'];
@@ -239,25 +237,18 @@ class ExchangeControllers extends Controller {
             $user_id = $delegateObj->id;
         }
 
-
-        $detailsObj = Details::getOne($input['details_id']);
-        if($detailsObj == null ) {
-            \Session::flash('error', "نوع عملية التحويل غير موجود");
-            return redirect()->back()->withInput();
-        }
-        $detailsObj = Details::getData($detailsObj);
         
         $exchangeObj = new Exchange;
         $exchangeObj->type = $input['type'];
         $exchangeObj->shop_id = $input['shop_id'];
         $exchangeObj->to_shop_id = $input['to_shop_id'];
-        $exchangeObj->details_id = $input['details_id'];
+        $exchangeObj->bank_price = $input['bank_price'];
         $exchangeObj->user_id = $user_id;
-        $exchangeObj->from_id = $detailsObj->from_id;
-        $exchangeObj->to_id = $detailsObj->to_id;
-        $exchangeObj->convert_price = $detailsObj->rate;
+        $exchangeObj->from_id = $input['from_id'];
+        $exchangeObj->to_id = $input['to_id'];
+        $exchangeObj->convert_price = $input['price'];
         $exchangeObj->amount = floatval($input['amount']);
-        $exchangeObj->paid = round(floatval($input['amount']) * $detailsObj->rate ,2);
+        $exchangeObj->paid = round(floatval($input['amount']) * $input['price'] ,2);
         $exchangeObj->created_at = DATE_TIME;
         $exchangeObj->created_by = USER_ID;
         $exchangeObj->save();

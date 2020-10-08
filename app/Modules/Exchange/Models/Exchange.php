@@ -112,7 +112,7 @@ class Exchange extends Model{
         $data->to_shop_name = $source->ToShop != null ? $source->ToShop->title : '';
         $data->from_id = $source->from_id;
         $data->from = $source->FromCurrency;
-        $data->details_id = $source->details_id;
+        $data->bank_price = $source->bank_price;
         $data->to_id = $source->to_id;
         $data->to = $source->ToCurrency;
         $data->convert_price = $source->convert_price;

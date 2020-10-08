@@ -109,33 +109,50 @@
                                 <div class="clearfix"></div>
                             </div>
                             <div class="col-xs-12">
-                                <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="col-xs-12 col-sm-6 col-md-2">
                                     <div class="form-group">
                                         <label>الكمية</label>
                                         <input type="text" name="amount" class="form-control" placeholder="الكمية" value="{{ $data->data->amount }}">
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="col-xs-12 col-sm-6 col-md-2">
                                     <div class="form-group">
-                                        <label>التحويل (من) : (الي)</label>
-                                        <select class="form-control" name="details_id"> 
-                                            <option value="">اختر عملية التحويل</option>
+                                        <label>العملة (المحول منها)</label>
+                                        <select class="form-control" name="from_id"> 
+                                            <option value="">اختر العملة </option>
                                             @foreach($data->currencies as $currency)
-                                            <option value="{{ $currency->id }}" data-area="{{ $currency->rate }}" data-area2="{{ $currency->to->name }}" {{ $data->data->details_id == $currency->id ? 'selected' : '' }}>{{ $currency->from->name }} الي {{ $currency->to->name }}</option>
+                                            <option value="{{ $currency->id }}" data-area2="{{ $currency->name }}" {{ $data->data->from_id == $currency->id ? 'selected' : '' }}>{{ $currency->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="col-xs-12 col-sm-6 col-md-2">
                                     <div class="form-group">
-                                        <label>سعر التحويل</label>
-                                        <input type="text" name="price" readonly class="form-control" placeholder="سعر التحويل" value="{{ $data->data->convert_price }} {{ $data->data->to->name }}">
+                                        <label>العملة (المحول اليها)</label>
+                                        <select class="form-control" name="to_id"> 
+                                            <option value="">اختر العملة </option>
+                                            @foreach($data->currencies as $currency)
+                                            <option value="{{ $currency->id }}" data-area2="{{ $currency->name }}" {{ $data->data->to_id == $currency->id ? 'selected' : '' }}>{{ $currency->name }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="col-xs-12 col-sm-6 col-md-2">
+                                    <div class="form-group">
+                                        <label>سعر التحويل</label>
+                                        <input type="text" name="price" class="form-control" placeholder="سعر التحويل" value="{{ $data->data->convert_price }}">
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-2">
+                                    <div class="form-group">
+                                        <label>سعر البنك</label>
+                                        <input type="text" name="bank_price" class="form-control" placeholder="سعر البنك" value="{{ $data->data->bank_price }}">
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6 col-md-2">
                                     <div class="form-group">
                                         <label>المطلوب تسليمه للعميل</label>
-                                        <input type="text" name="paid" readonly class="form-control" placeholder="المطلوب تسليمه للعميل" value="{{ $data->data->paid }} {{ $data->data->to->name }}"> 
+                                        <input type="text" name="paid" readonly class="form-control" placeholder="المطلوب تسليمه للعميل" value="{{ $data->data->paid . ' '. $data->data->to->name }}"> 
                                     </div>
                                 </div>
                             </div>

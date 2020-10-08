@@ -27,7 +27,7 @@ class Wallet extends Model{
         return $this->belongsTo('\App\Models\Currency','to_id');
     }
 
-    static function dataList($withPaginate=null) {
+    static function dataList($withPaginate=null,$withRemainBalance=null) {
         $input = \Input::all();
 
         $source = self::NotDeleted();
@@ -54,10 +54,10 @@ class Wallet extends Model{
         }
 
         $source->orderBy('id','DESC');
-        return self::generateObj($source,$withPaginate);
+        return self::generateObj($source,$withPaginate,$withRemainBalance);
     }
 
-    static function generateObj($source,$withPaginate=null){
+    static function generateObj($source,$withPaginate=null,$withRemainBalance=null){
         if($withPaginate != null){
             $sourceArr = $source->get();
         }else{
@@ -66,7 +66,7 @@ class Wallet extends Model{
         $list = [];
         foreach($sourceArr as $key => $value) {
             $list[$key] = new \stdClass();
-            $list[$key] = self::getData($value);
+            $list[$key] = self::getData($value,$withRemainBalance);
         }
         if($withPaginate==null){
             $data['pagination'] = \Helper::GeneratePagination($sourceArr);
@@ -76,7 +76,7 @@ class Wallet extends Model{
     }
 
 
-    static function getData($source) {
+    static function getData($source,$withRemainBalance=null) {
         $data = new  \stdClass();
         $myType = '';
         $report_text = '';
@@ -109,10 +109,22 @@ class Wallet extends Model{
         $data->amount = $source->amount;
         $data->bank_convert_price = $source->bank_convert_price;
         $data->gain = $source->gain;
-        $data->remain_balance = 0;
+        if($withRemainBalance != null){
+            $data->remain_balance = self::getBalance($source->client_id);
+        }
         $data->total = $source->total;
         $data->created_at = $source->created_at;
         return $data;
+    }
+
+    static function getBalance($client_id){
+        $clientObj = Client::getOne($client_id);
+        $main_balance = $clientObj->balance;
+        $main_currency = $clientObj->currency_id;
+        $deposites = Wallet::NotDeleted()->where('type',1)->where('client_id',$client_id)->where('to_id',$main_currency)->sum('total');
+        $withDraws = Wallet::NotDeleted()->where('type',2)->where('client_id',$client_id)->where('to_id',$main_currency)->sum('total');
+        $remain_balance = round( ($main_balance + $deposites - $withDraws) ,2);
+        return $remain_balance;
     }
 
     static function getOne($id) {

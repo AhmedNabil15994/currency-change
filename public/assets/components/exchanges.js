@@ -47,21 +47,27 @@ $('select[name="client_id"]').on('change',function(){
 
 
 function getCalcs(){
-    $('input[name="price"]').val(0);
     $('input[name="paid"]').val(0);
     var amount = $('input[name="amount"]').val();
-    var convert = $('select[name="details_id"] option:selected').attr('data-area');
-    var convertLabel = $('select[name="details_id"] option:selected').attr('data-area2');
+    var convert = $('input[name="price"]').val();
+    var convertLabel = $('select[name="to_id"] option:selected').attr('data-area2');
     if(convert > 0 && amount > 0 ){
-        $('input[name="price"]').val(convert+' '+convertLabel);
         $('input[name="paid"]').val((convert * amount).toFixed(2) + ' '+convertLabel);
     }
 }
 
-$('select[name="details_id"]').on('change',function(){
+$('select[name="to_id"]').on('change',function(){
+    getCalcs();
+});
+
+$('select[name="from"]').on('change',function(){
     getCalcs();
 });
 
 $('input[name="amount"]').on('blur',function(){
+    getCalcs();
+});
+
+$('input[name="price"]').on('blur',function(){
     getCalcs();
 });

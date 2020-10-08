@@ -63,7 +63,9 @@ class Client extends Model{
         $data->currency_id = $source->currency_id;
         $data->currency = $source->currency_id != 0 ? Currency::getOne($source->currency_id)->name : '';
         $data->active = $source->is_active == 1 ? "مفعل" : "غير مفعل";
+        $data->paid = $source->paid == 1 ? "مدفوع" : "غير مدفوع";
         $data->is_active = $source->is_active;
+        $data->is_paid = $source->paid;
         return $data;
     }
 
@@ -105,6 +107,7 @@ class Client extends Model{
         $userObj->currency_id = $input['currency_id'];
         $userObj->balance = $input['balance'];
         $userObj->is_active = isset($input['active']) ? 1 : 0;
+        $userObj->paid = isset($input['paid']) ? 1 : 0;
         $userObj->created_at = DATE_TIME;
         $userObj->created_by = USER_ID;
         $userObj->save();

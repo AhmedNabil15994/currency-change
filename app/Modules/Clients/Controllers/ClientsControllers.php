@@ -83,6 +83,7 @@ class ClientsControllers extends Controller {
         $userObj->currency_id = $input['currency_id'];
         $userObj->balance = $input['balance'];
         $userObj->is_active = isset($input['active']) ? 1 : 0;
+        $userObj->paid = isset($input['paid']) ? 1 : 0;
         $userObj->updated_at = DATE_TIME;
         $userObj->updated_by = USER_ID;
         $userObj->save();

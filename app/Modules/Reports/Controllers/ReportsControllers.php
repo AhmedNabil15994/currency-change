@@ -333,7 +333,7 @@ class ReportsControllers extends Controller {
     }
 
     public function clients(){
-        $usersList = Wallet::dataList();
+        $usersList = Wallet::dataList(null,'withRemainBalance');
         $usersList['shops'] = Shop::dataList('no_paginate')['data'];
         $usersList['currencies'] = Currency::dataList('no_paginate')['data'];
         $usersList['clients'] = Client::dataList('no_paginate')['data'];

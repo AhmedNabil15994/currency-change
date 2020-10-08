@@ -36,24 +36,32 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-xs-12 col-sm-12 col-md-6">
-                                            <div class="form-group">
-                                                <label>الرصيد الافتتاحي</label>
-                                                <input type="number" min="0" class="form-control" placeholder="الرصيد الافتتاحي" name="balance" value="{{ $data->data->balance }}" required>
-                                                
+                                    <div class="col-xs-12 col-sm-4 col-md-5">
+                                        <div class="form-group">
+                                            <label>الرصيد الافتتاحي</label>
+                                            <input type="number" min="0" class="form-control" placeholder="الرصيد الافتتاحي" name="balance" value="{{ $data->data->balance }}" required>
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-4 col-md-5">
+                                        <div class="form-group">
+                                            <label>العملة</label>
+                                            <select class="form-control" name="currency_id"> 
+                                                <option>اختر العملة ...</option>
+                                                @foreach($data->currencies as $currency)
+                                                <option value="{{ $currency->id }}" data-area="{{ $currency->code }}" {{ $data->data->currency_id == $currency->id ? 'selected' : '' }}>{{ $currency->name }}</option>
+                                                @endforeach 
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-4 col-md-2">
+                                        <div class="form-group">
+                                            <label>تم الدفع </label>
+                                            <div class="checkbox">
+                                                <input type="checkbox" class="flat" name="paid" {{ $data->data->is_paid == 1 ? 'checked' : '' }}>
                                             </div>
                                         </div>
-                                        <div class="col-xs-12 col-sm-12 col-md-6">
-                                            <div class="form-group">
-                                                <label>العملة</label>
-                                                <select class="form-control" name="currency_id"> 
-                                                    <option>اختر العملة ...</option>
-                                                    @foreach($data->currencies as $currency)
-                                                    <option value="{{ $currency->id }}" data-area="{{ $currency->code }}" {{ $data->data->currency_id == $currency->id ? 'selected' : '' }}>{{ $currency->name }}</option>
-                                                    @endforeach 
-                                                </select>
-                                            </div>
-                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-6 col-xs-12">
