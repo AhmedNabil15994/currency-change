@@ -30,9 +30,16 @@ function getCalcs(){
     var convert = $('input[name="convert_price"]').val();
     var convertLabel = $('select[name="to_id"] option:selected').attr('data-area2');
     if(convert > 0 && amount > 0 ){
-        $('input[name="total"]').val((convert * amount).toFixed(2) + ' '+convertLabel);
+        $('input[name="total"]').val((amount / convert).toFixed(2) + ' '+convertLabel);
     }
 }
+
+$('select[name="commission_type"]').on('change',function(){
+    if($(this).val()){
+        $('.myLabel').html($(this).children('option:selected').text());
+        $('input[name="commission_value"]').attr('placeholder',$(this).children('option:selected').text());
+    }
+});
 
 $('input[name="convert_price"]').on('blur',function(){
     getCalcs();

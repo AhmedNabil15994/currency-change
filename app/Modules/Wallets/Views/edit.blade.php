@@ -77,15 +77,15 @@
                                         <div class="form-group">
                                             <label>نوع العمولة</label>
                                             <select class="form-control" name="commission_type"> 
-                                                <option value="1" {{ $data->data->commission_type == 1 ? 'selected':'' }}>قيمة</option>
-                                                <option value="2" {{ $data->data->commission_type == 2 ? 'selected':'' }}>نسبة</option>
+                                                <option value="1" {{ $data->data->commission_type == 1 ? 'selected':'' }}>ريت</option>
+                                                <option value="2" {{ $data->data->commission_type == 2 ? 'selected':'' }}>عمولة</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-xs-12 col-sm-6 col-md-2 clients">
                                         <div class="form-group">
-                                            <label>العمولة</label>
-                                            <input type="text" name="commission_value" class="form-control" placeholder="العمولة" value="{{ $data->data->commission_value }}">
+                                            <label class="myLabel">ريت</label>
+                                            <input type="text" name="commission_value" class="form-control" placeholder="ريت" value="{{ $data->data->commission_value }}">
                                         </div>
                                     </div>
                                     <div class="clearfix"></div>
