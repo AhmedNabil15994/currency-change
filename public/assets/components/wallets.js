@@ -25,21 +25,27 @@ function deleteWallet($id) {
 }
 
 function getCalcs(){
-    $('input[name="convert_price"]').val(0);
     $('input[name="total"]').val(0);
     var amount = $('input[name="amount"]').val();
-    var convert = $('select[name="details_id"] option:selected').attr('data-area');
-    var convertLabel = $('select[name="details_id"] option:selected').attr('data-area2');
+    var convert = $('input[name="convert_price"]').val();
+    var convertLabel = $('select[name="to_id"] option:selected').attr('data-area2');
     if(convert > 0 && amount > 0 ){
-        $('input[name="convert_price"]').val(convert+' '+convertLabel);
         $('input[name="total"]').val((convert * amount).toFixed(2) + ' '+convertLabel);
     }
 }
 
-$('select[name="details_id"]').on('change',function(){
+$('input[name="convert_price"]').on('blur',function(){
     getCalcs();
 });
 
 $('input[name="amount"]').on('blur',function(){
+    getCalcs();
+});
+
+$('select[name="to_id"]').on('change',function(){
+    getCalcs();
+});
+
+$('select[name="from_id"]').on('change',function(){
     getCalcs();
 });

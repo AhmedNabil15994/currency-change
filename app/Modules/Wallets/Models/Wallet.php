@@ -100,7 +100,6 @@ class Wallet extends Model{
         $data->shop_name = $source->Shop->title;
         $data->from_id = $source->from_id;
         $data->from = $source->FromCurrency;
-        $data->details_id = $source->details_id;
         $data->client_id = $source->client_id;
         $data->client_name = $source->Client->name;
         $data->to_id = $source->to_id;

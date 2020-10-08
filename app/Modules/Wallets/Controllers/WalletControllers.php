@@ -5,7 +5,6 @@ use App\Models\Currency;
 use App\Models\Delegate;
 use App\Models\Client;
 use App\Models\Shop;
-use App\Models\Details;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use Carbon\Carbon;
@@ -20,8 +19,10 @@ class WalletControllers extends Controller {
         $rules = [
             'type' => 'required',
             'shop_id' => 'required',
+            'from_id' => 'required',
+            'to_id' => 'required',
             'client_id' => 'required',
-            'details_id' => 'required',
+            'convert_price' => 'required',
             'amount' => 'required',
             'bank_convert_price' => 'required',
             'commission_type' => 'required',
@@ -32,7 +33,9 @@ class WalletControllers extends Controller {
             'type.required' => "يرجي اختيار نوع العمولة",
             'shop_id.required' => "يرجي اختيار فرع الايداع",
             'client_id.required' => "يرجي اختيار العميل",
-            'details_id.required' => "يرجي اختيار نوع التحويل",
+            'convert_price.required' => "يرجي ادخال سعر التغيير",
+            'from_id.required' => "يرجي اختيار العملة المحول منها",
+            'to_id.required' => "يرجي اختيار العملة المحول اليها",
             'amount.required' => "يرجي ادخال الكمية المراد تحويلها",
             'bank_convert_price.required' => "يرجي ادخال سعر البنك",
             'commission_type.required' => "يرجي اختيار نوع العمولة",
@@ -63,7 +66,7 @@ class WalletControllers extends Controller {
 
         $data['data'] = Wallet::getData($userObj);
         $data['shops'] = Shop::dataList('no_paginate')['data'];
-        $data['currencies'] = Details::dataList('no_paginate')['data'];
+        $data['currencies'] = Currency::dataList('no_paginate')['data'];
         $data['clients'] = Client::dataList('no_paginate')['data'];
         return view('Wallets.Views.edit')->with('data', (object) $data);
     }
@@ -104,26 +107,19 @@ class WalletControllers extends Controller {
         }
 
 
-        $detailsObj = Details::getOne($input['details_id']);
-        if($detailsObj == null ) {
-            \Session::flash('error', "نوع عملية التحويل غير موجود");
-            return redirect()->back()->withInput();
-        }
-        $detailsObj = Details::getData($detailsObj);
-        
         $walletObj->type = $input['type'];
         $walletObj->commission_type = $input['commission_type'];
         $walletObj->commission_value = $input['commission_value'];
         $walletObj->commission = $input['commission_type'] == 1 ? floatval($input['commission_value']) : round( (floatval($input['commission_value']) / 100 ) *  floatval($input['amount'])  ,2);
         $walletObj->shop_id = $input['shop_id'];
-        $walletObj->details_id = $input['details_id'];
         $walletObj->client_id = $input['client_id'];
-        $walletObj->from_id = $detailsObj->from_id;
-        $walletObj->to_id = $detailsObj->to_id;
-        $walletObj->convert_price = $detailsObj->rate;
+        $walletObj->from_id = $input['from_id'];
+        $walletObj->to_id = $input['to_id'];
+        $walletObj->convert_price = $input['convert_price'];
         $walletObj->amount = floatval($input['amount']);
         $walletObj->bank_convert_price = floatval($input['bank_convert_price']);
-        $walletObj->gain = round(round(floatval($input['amount']) * $detailsObj->rate ,2) - round(floatval($input['amount']) * floatval($input['bank_convert_price']) ,2) ,2);
+        $walletObj->gain = round(round(floatval($input['amount']) * $input['convert_price'] ,2) - round(floatval($input['amount']) * floatval($input['bank_convert_price']) ,2) ,2);
+        $walletObj->total = round(floatval($input['amount']) * floatval($input['convert_price']) ,2);
         $walletObj->updated_at = DATE_TIME;
         $walletObj->updated_by = USER_ID;
         $walletObj->save();
@@ -133,7 +129,7 @@ class WalletControllers extends Controller {
     }
 
     public function add() {
-        $data['currencies'] = Details::dataList('no_paginate')['data'];
+        $data['currencies'] = Currency::dataList('no_paginate')['data'];
         $data['shops'] = Shop::dataList('no_paginate')['data'];
         $data['clients'] = Client::dataList('no_paginate')['data'];
         return view('Wallets.Views.add')->with('data',(object) $data);
@@ -165,13 +161,6 @@ class WalletControllers extends Controller {
             return redirect()->back()->withInput();
         }
 
-
-        $detailsObj = Details::getOne($input['details_id']);
-        if($detailsObj == null ) {
-            \Session::flash('error', "نوع عملية التحويل غير موجود");
-            return redirect()->back()->withInput();
-        }
-        $detailsObj = Details::getData($detailsObj);
         
         $walletObj = new Wallet;
         $walletObj->type = $input['type'];
@@ -179,14 +168,14 @@ class WalletControllers extends Controller {
         $walletObj->commission_value = $input['commission_value'];
         $walletObj->commission = $input['commission_type'] == 1 ? floatval($input['commission_value']) : round( (floatval($input['commission_value']) / 100 ) *  floatval($input['amount'])  ,2);
         $walletObj->shop_id = $input['shop_id'];
-        $walletObj->details_id = $input['details_id'];
         $walletObj->client_id = $input['client_id'];
-        $walletObj->from_id = $detailsObj->from_id;
-        $walletObj->to_id = $detailsObj->to_id;
-        $walletObj->convert_price = $detailsObj->rate;
+        $walletObj->from_id = $input['from_id'];
+        $walletObj->to_id = $input['to_id'];
+        $walletObj->convert_price = $input['convert_price'];
         $walletObj->amount = floatval($input['amount']);
         $walletObj->bank_convert_price = floatval($input['bank_convert_price']);
-        $walletObj->gain = round(round(floatval($input['amount']) * $detailsObj->rate ,2) - round(floatval($input['amount']) * floatval($input['bank_convert_price']) ,2) ,2);
+        $walletObj->gain = round(round(floatval($input['amount']) * floatval($input['convert_price']) ,2) - round(floatval($input['amount']) * floatval($input['bank_convert_price']) ,2) ,2);
+        $walletObj->total = round(floatval($input['amount']) * floatval($input['convert_price']) ,2);
         $walletObj->created_at = DATE_TIME;
         $walletObj->created_by = USER_ID;
         $walletObj->save();

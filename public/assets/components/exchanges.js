@@ -60,7 +60,7 @@ $('select[name="to_id"]').on('change',function(){
     getCalcs();
 });
 
-$('select[name="from"]').on('change',function(){
+$('select[name="from_id"]').on('change',function(){
     getCalcs();
 });
 
