@@ -124,7 +124,7 @@
                                 <td>{{ $value->type_text }}</td>
                                 <td>{{ $value->from->name }}</td>
                                 <td>{{ $value->to->name }}</td>
-                                <td>1 {{ $value->from->name }} == {{ $value->convert_price }} {{ $value->to->name }}</td>
+                                <td>1 {{ $value->to->name }} == {{ $value->convert_price }} {{ $value->from->name }}</td>
                                 <td>{{ $value->amount }} {{ $value->from->name }}</td>
                                 <td>{{ $value->commission_type_text }}</td>
                                 <td>{{ $value->commission . ' ' . $value->from->name }}</td>
