@@ -70,11 +70,11 @@ class DashboardControllers extends Controller {
         $storages = ShopStorage::NotDeleted()->select('*')->selectRaw(\DB::raw('sum(balance) as balance'))->whereIn('shop_id',$this->shops)->groupBy('currency_id','shop_id')->where('is_active',1)->get();
         foreach ($storages as $oneStorage) {
             if(!isset($balances[$oneStorage->shop_id])){
-                $balances[$oneStorage->shop_id] = [0,0,0,0,0,0];   
+                $balances[$oneStorage->shop_id] = [-1,-1,-1,-1,-1,-1];   
             }
             if(!isset($totals[$oneStorage->shop_id])){
-                $totals[$oneStorage->shop_id][1] = [0,0,0,0,0,0];
-                $totals[$oneStorage->shop_id][0] = [0,0,0,0,0,0];
+                $totals[$oneStorage->shop_id][1] = [-1,-1,-1,-1,-1,-1];
+                $totals[$oneStorage->shop_id][0] = [-1,-1,-1,-1,-1,-1];
             }
             $balances[$oneStorage->shop_id][$oneStorage->currency_id-1] = $oneStorage->balance + $totals[$oneStorage->shop_id][1][$oneStorage->currency_id-1] - $totals[$oneStorage->shop_id][0][$oneStorage->currency_id-1];
             $allTotals[$oneStorage->currency_id-1] = $balances[$oneStorage->shop_id][$oneStorage->currency_id-1] + $allTotals[$oneStorage->currency_id-1];

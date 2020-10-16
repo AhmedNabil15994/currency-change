@@ -16,7 +16,7 @@
             <h3 style="margin-bottom: 10px;margin-top: 10px;font-size: 20px;">حساب صندوق {{ $oneShop->title }}</h3>
             @php $shopDetails = $data->balances[$oneShop->id]; @endphp 
             @for($c=0;$c<count($shopDetails);$c++)
-            @if($shopDetails[$c] != 0)
+            @if($shopDetails[$c] >= 0)
             <b style="font-size: 16px;display: block;">{{ $shopDetails[$c] }} {{ $data->currencies[$c] }}</b>
             @endif
             @endfor  
