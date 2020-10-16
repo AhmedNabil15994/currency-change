@@ -1,6 +1,14 @@
 @extends('Layouts.master')
 @section('title', 'تقارير العملاء')
-
+@section('otherhead')
+<style type="text/css" media="screen">
+    .dt-buttons.btn-group,
+    #example_filter,
+    .dataTables_paginate{
+        display: none;
+    }
+</style>
+@endsection
 @section('content')
 
     <div class="row">
