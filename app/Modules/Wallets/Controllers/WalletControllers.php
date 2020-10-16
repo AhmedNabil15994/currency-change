@@ -118,7 +118,7 @@ class WalletControllers extends Controller {
         $walletObj->convert_price = $input['convert_price'];
         $walletObj->amount = floatval($input['amount']);
         $walletObj->bank_convert_price = floatval($input['bank_convert_price']);
-        $walletObj->gain = round(round(floatval($input['amount']) / $input['convert_price'] ,2) - round(floatval($input['amount']) / floatval($input['bank_convert_price']) ,2) ,2);
+        $walletObj->gain = abs(round(round(floatval($input['amount']) * $input['convert_price'] ,2) - round(floatval($input['amount']) * floatval($input['bank_convert_price']) ,2) ,2));
         $walletObj->total = round(floatval($input['amount']) / floatval($input['convert_price']) ,2);
         $walletObj->updated_at = DATE_TIME;
         $walletObj->updated_by = USER_ID;
@@ -161,7 +161,6 @@ class WalletControllers extends Controller {
             return redirect()->back()->withInput();
         }
 
-        
         $walletObj = new Wallet;
         $walletObj->type = $input['type'];
         $walletObj->commission_type = $input['commission_type'];
@@ -174,7 +173,7 @@ class WalletControllers extends Controller {
         $walletObj->convert_price = $input['convert_price'];
         $walletObj->amount = floatval($input['amount']);
         $walletObj->bank_convert_price = floatval($input['bank_convert_price']);
-        $walletObj->gain = round(round(floatval($input['amount']) / floatval($input['convert_price']) ,2) - round(floatval($input['amount']) / floatval($input['bank_convert_price']) ,2) ,2);
+        $walletObj->gain = abs(round(round(floatval($input['amount']) * floatval($input['convert_price']) ,2) - round(floatval($input['amount']) * floatval($input['bank_convert_price']) ,2) ,2));
         $walletObj->total = round(floatval($input['amount']) / floatval($input['convert_price']) ,2);
         $walletObj->created_at = DATE_TIME;
         $walletObj->created_by = USER_ID;

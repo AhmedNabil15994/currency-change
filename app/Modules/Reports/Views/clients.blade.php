@@ -97,6 +97,7 @@
                         </div>
                         <div class="col-xs-6 text-right">
                             <ul class="nav navbar-right " style="padding-top: 1%">
+                                <a href="#" class="btn btn-default print" style="color: black;"><i class="fa fa-print"></i> طباعة</a>
                                 <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                             </ul>
                         </div>
@@ -105,7 +106,7 @@
                 </div>
 
                 <div class="x_content x_content_table">
-                    <table id="tableList" class="table hover table-striped table-bordered">
+                    <table id="example" class="table hover table-striped table-bordered">
                         <thead>
                         <tr>
                             <th>ID</th>
