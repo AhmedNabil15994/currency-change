@@ -1,7 +1,7 @@
 @extends('Layouts.master')
 @section('title', 'الرئيسية')
 @section('otherhead')
-<link rel="stylesheet" type="text/css" href="{{ URL::to('/assets/css/dashboard.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('/assets/css/dashboard.css') }}">
 @endsection
 @section('content')
 <div class="">
@@ -36,7 +36,7 @@
         <div class="tile-stats">
           <div class="icon"><i class="fas fa-dollar-sign"></i></div>
           <div class="count">
-            <h3 style="margin-bottom: 10px;margin-top: 10px;font-size: 20px;">{{ $oneBank->account_number }} - {{ $oneBank->name }}</h3>
+            <h4 style="margin-bottom: 10px;margin-top: 10px;font-size: 18px;color: #BAB8B8;">{{ $oneBank->account_number }} - {{ $oneBank->name }}</h4>
             <b style="font-size: 16px;display: block;">{{ $oneBank->myTotal }} {{ $oneBank->currency_name }}</b>
           </div>
           <h3 style="font-size: 20px;margin-bottom: 10px;margin-top: 10px;">الرصيد المتاح</h3>

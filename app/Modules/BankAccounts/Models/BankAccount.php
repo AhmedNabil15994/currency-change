@@ -53,7 +53,7 @@ class BankAccount extends Model{
     static function reportList($shop_id=null,$date=null,$withPaginate=null) {
         $input = \Input::all();
 
-        $source = self::NotDeleted()->whereHas('Transfer');
+        $source = self::NotDeleted();
         if (isset($input['name']) && !empty($input['name'])) {
             $source->where('name', 'LIKE', '%' . $input['name'] . '%');
         }
@@ -77,11 +77,7 @@ class BankAccount extends Model{
             });
         }
 
-        if($date == null){
-            $source->whereHas('Transfer',function($transferQuery){
-                $transferQuery->groupBy(\DB::raw('Date(created_at),bank_account_id'));
-            });
-        }else{
+        if($date != null){
             $source->whereHas('Transfer',function($transferQuery){
                 $transferQuery->groupBy(\DB::raw('DATE_FORMAT(created_at,"%m-%Y"),bank_account_id'));
             });
