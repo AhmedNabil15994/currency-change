@@ -129,7 +129,11 @@
                                 <td>{{ $value->commission_type_text }}</td>
                                 <td>{{ $value->commission . ' ' . $value->from->name }}</td>
                                 <td>{{ $value->bank_convert_price }}</td>
-                                <td>{{ $value->gain . ' ' . $value->from->name }}</td>
+                                @if($value->commission_type == 1)
+                                <td>{{ round($value->gain * $value->convert_price ,2) . ' ' . $value->from->name }}</td>
+                                @else
+                                <td>{{ $value->gain . ' ' . $value->to->name }}</td>
+                                @endif
                                 <td>{{ $value->created_at }}</td>
                                 <td class="actions" width="15%" align="left">
                                     @if(\Helper::checkRules('edit-wallet'))
