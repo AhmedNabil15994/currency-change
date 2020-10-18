@@ -130,7 +130,7 @@
                                 <td>{{ $value->commission . ' ' . $value->from->name }}</td>
                                 <td>{{ $value->bank_convert_price }}</td>
                                 @if($value->commission_type == 1)
-                                <td>{{ round($value->gain * $value->convert_price ,2) . ' ' . $value->from->name }}</td>
+                                <td>{{ round($value->gain * $value->bank_convert_price ,2) . ' ' . $value->from->name }}</td>
                                 @else
                                 <td>{{ $value->gain . ' ' . $value->to->name }}</td>
                                 @endif
